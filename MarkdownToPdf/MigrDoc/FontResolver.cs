@@ -1,86 +1,95 @@
-﻿// This file is a part of MarkdownToPdf Library by Tomas Kubec
+// This file is a part of MarkdownToPdf Library by Geert-Jan Thomas based on earlier work by Tomas Kubec
 // Distributed under MIT license - see license.txt
 //
 
 using PdfSharp.Fonts;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
-namespace Orionsoft.MarkdownToPdfLib
+namespace VectorAi.MarkdownToPdf.MigrDoc;
+
+internal class FontResolver : IFontResolver
 {
-    internal class FontResolver : IFontResolver
+    private readonly List<FontFamily> _fonts;
+    public string Dir { get; set; } = "";
+
+    public FontResolver()
     {
-        private readonly List<FontFamily> _fonts = null;
-        public string Dir { get; set; }
+        _fonts = new List<FontFamily>();
+    }
 
-        public FontResolver()
+    public FontResolver(string dir) : this()
+    {
+        Dir = dir ?? "";
+    }
+
+    public FontResolverInfo? ResolveTypeface(string familyName, bool isBold, bool isItalic)
+    {
+        Dir = Dir ?? "";
+        var name = familyName.ToLower();
+
+        var registeredFont = _fonts.FirstOrDefault(x => x.Name.ToLower() == name);
+
+        if (registeredFont == null)
         {
-            _fonts = new List<FontFamily>();
+            return PlatformFontResolver.ResolveTypeface(familyName, isBold, isItalic);
         }
 
-        public FontResolver(string dir) : this()
+        if (isBold)
         {
-            Dir = dir ?? "";
-        }
-
-        public FontResolverInfo ResolveTypeface(string familyName, bool isBold, bool isItalic)
-        {
-            Dir = Dir ?? "";
-            var name = familyName.ToLower();
-
-            var registeredFont = _fonts.FirstOrDefault(x => x.Name.ToLower() == name);
-
-            if (registeredFont == null) return PlatformFontResolver.ResolveTypeface(familyName, isBold, isItalic);
-
-            if (isBold)
-            {
-                if (isItalic)
-                {
-                    if (registeredFont.Normal == registeredFont.BoldItalic) return new FontResolverInfo(registeredFont.Normal, PdfSharp.Drawing.XStyleSimulations.BoldItalicSimulation);
-                    if (registeredFont.Italic == registeredFont.BoldItalic) return new FontResolverInfo(registeredFont.Italic, PdfSharp.Drawing.XStyleSimulations.BoldSimulation);
-                    if (registeredFont.Bold == registeredFont.BoldItalic) return new FontResolverInfo(registeredFont.Bold, PdfSharp.Drawing.XStyleSimulations.ItalicSimulation);
-                    return new FontResolverInfo(registeredFont.BoldItalic);
-                }
-
-                if (registeredFont.Normal == registeredFont.Bold) return new FontResolverInfo(registeredFont.Normal, PdfSharp.Drawing.XStyleSimulations.BoldSimulation);
-                return new FontResolverInfo(registeredFont.Bold);
-            }
             if (isItalic)
             {
-                if (registeredFont.Normal == registeredFont.Italic) return new FontResolverInfo(registeredFont.Normal, PdfSharp.Drawing.XStyleSimulations.ItalicSimulation);
-                return new FontResolverInfo(registeredFont.Italic);
+                if (registeredFont.Normal == registeredFont.BoldItalic) return new FontResolverInfo(registeredFont.Normal, PdfSharp.Drawing.XStyleSimulations.BoldItalicSimulation);
+                if (registeredFont.Italic == registeredFont.BoldItalic) return new FontResolverInfo(registeredFont.Italic, PdfSharp.Drawing.XStyleSimulations.BoldSimulation);
+                if (registeredFont.Bold == registeredFont.BoldItalic) return new FontResolverInfo(registeredFont.Bold, PdfSharp.Drawing.XStyleSimulations.ItalicSimulation);
+                return new FontResolverInfo(registeredFont.BoldItalic);
             }
 
-            return new FontResolverInfo(registeredFont.Normal);
+            if (registeredFont.Normal == registeredFont.Bold) return new FontResolverInfo(registeredFont.Normal, PdfSharp.Drawing.XStyleSimulations.BoldSimulation);
+            return new FontResolverInfo(registeredFont.Bold);
         }
-
-        public void Register(string name, string regular, string bold = "", string italic = "", string boldItalic = "")
+        if (isItalic)
         {
-            var existing = _fonts.FirstOrDefault(x => x.Name == name);
-
-            if (existing != null)
-            {
-                _fonts.RemoveAt(_fonts.IndexOf(existing));
-            }
-
-            _fonts.Add(new FontFamily(name, regular, bold, italic, boldItalic));
+            if (registeredFont.Normal == registeredFont.Italic) return new FontResolverInfo(registeredFont.Normal, PdfSharp.Drawing.XStyleSimulations.ItalicSimulation);
+            return new FontResolverInfo(registeredFont.Italic);
         }
 
-        public byte[] GetFont(string faceName)
+        return new FontResolverInfo(registeredFont.Normal);
+    }
+
+    public void Register(string name, string regular, string bold = "", string italic = "", string boldItalic = "", string? folder = null)
+    {
+        var existing = _fonts.FirstOrDefault(x => x.Name == name);
+
+        if (existing != null)
         {
-            if (File.Exists(faceName))
-            {
-                return File.ReadAllBytes(faceName);
-            }
-            else
-            {
-                if (!(Dir.EndsWith(Path.DirectorySeparatorChar.ToString()) || Dir.EndsWith(Path.AltDirectorySeparatorChar.ToString())))
-                {
-                    Dir += Path.DirectorySeparatorChar;
-                }
-                return File.ReadAllBytes(Dir + faceName);
-            }
+            _fonts.RemoveAt(_fonts.IndexOf(existing));
         }
+
+        _fonts.Add(new FontFamily(name, regular, bold, italic, boldItalic, folder));
+    }
+
+    public byte[] GetFont(string faceName)
+    {
+        if (File.Exists(faceName))
+        {
+            return File.ReadAllBytes(faceName);
+        }
+
+        //if (!(Dir.EndsWith(Path.DirectorySeparatorChar.ToString()) || Dir.EndsWith(Path.AltDirectorySeparatorChar.ToString())))
+        //{
+        //    Dir += Path.DirectorySeparatorChar;
+        //}
+        var fullPath = Path.Combine(Dir, faceName);
+        if (!File.Exists(fullPath))
+        {
+            fullPath = Path.Combine(_fonts.FirstOrDefault(f => 
+                f.Normal == faceName
+                || f.Bold == faceName
+                || f.Italic == faceName
+                || f.BoldItalic == faceName
+                )?.Folder ?? "", faceName);
+        }
+        return File.ReadAllBytes(fullPath);
+
+
     }
 }

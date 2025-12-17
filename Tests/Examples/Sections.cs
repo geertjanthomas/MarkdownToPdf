@@ -1,27 +1,36 @@
-﻿using Orionsoft.MarkdownToPdfLib;
-using System;
-using System.IO;
+using VectorAi.MarkdownToPdf;
 
-namespace Tests.Examples
+namespace Test10.Examples;
+
+/// <summary>
+/// Demonstration of:
+///   - section breaks
+///   - section numbering
+/// </summary>
+
+public static class Sections
 {
-    /// <summary>
-    /// Demonstration of:
-    ///   - section breaks
-    ///   - section numbering
-    /// </summary>
-
-    public static class Sections
+    public static void Run()
     {
-        public static void Run()
-        {
-            var markdown = File.ReadAllText("../../data/sections.md");
-            var pdf = new MarkdownToPdf();
-            pdf.WarningIssued += (o, e) => { Console.WriteLine($"{e.Category}: {e.Message}"); };
+        var markdown = File.ReadAllText("../../../data/sections.md");
+        var pdf = new MarkdownToPdf();
+        var fi = WindowsFontFinder.Find("Consolas");
+        if (fi != null)
+            pdf.RegisterLocalFont(
+                fi.Name,
+                fi.Regular,
+                fi.Bold,
+                fi.Italic,
+                fi.BoldItalic,
+                fi.Folder
+                );
 
-            // by default, section starts with page 42 (just for demonstration purposes)
-            pdf.DefaultPageSetup.StartingNumber = 42;
+        pdf.WarningIssued += (o, e) => { Console.WriteLine($"{e.Category}: {e.Message}"); };
 
-            pdf
+        // by default, section starts with page 42 (just for demonstration purposes)
+        pdf.DefaultPageSetup.StartingNumber = 42;
+
+        pdf
             .PageMargins(left: "1cm", right: "1cm", top: "2cm", bottom: "3cm")
             .PaperSize(PaperSize.A5)
 
@@ -45,6 +54,5 @@ namespace Tests.Examples
             .Add(markdown)
 
             .Save("sections.pdf");
-        }
     }
 }

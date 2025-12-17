@@ -7,16 +7,16 @@ using VectorAi.MarkdownToPdf.Styling;
 
 namespace VectorAi.MarkdownToPdf.Converters.ContainerConverters;
 
-internal class ListConverter : ContainerBlockConverter
+internal class ListItemConverter : ContainerBlockConverter
 {
-    internal ListConverter(ListBlock block, ContainerBlockConverter parent)
+    internal ListItemConverter(ListItemBlock block, ContainerBlockConverter parent)
         : base(block, parent)
     {
         ElementDescriptor = new SingleElementDescriptor
         {
             Attributes = Attributes,
-            Type = block.OrderedStart == null ? ElementType.UnorderedList : ElementType.OrderedList
+            Type = Parent?.ElementDescriptor.Type == ElementType.OrderedList ? ElementType.OrderedListItem : ElementType.UnorderedListItem,
+            Position = new ElementPosition(Block)
         };
-        Attributes.Markup = block.OrderedStart != null ? "Number" : block.BulletType.ToString();
     }
 }

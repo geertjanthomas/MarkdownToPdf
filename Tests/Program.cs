@@ -1,26 +1,29 @@
-﻿namespace Tests
-{
-    internal static class Program
-    {
-        private static void Main()
-        {
-            RunAllExamples();
-        }
+using PdfSharp.Fonts;
 
-        private static void RunAllExamples()
-        {
-            Examples.HelloWorld.Run();
-            Examples.BasicStyling.Run();
-            Examples.CustomStyles.Run();
-            Examples.AdvancedStyling.Run();
-            Examples.Tables.Run();
-            Examples.Sections.Run();
-            Examples.Events.Run();
-            Examples.Toc.Run();
-            Examples.Highlighting.Run();
-            Examples.Features.Run();
-            Examples.Attributes.Run();
-            Examples.FullBook.Run();
-        }
+namespace Test10;
+
+internal class Program
+{
+    private static void Main(string[] args)
+    {
+        GlobalFontSettings.UseWindowsFontsUnderWindows = true;
+        RunAllExamples();
+    }
+
+    private static void RunAllExamples()
+    {
+        Examples.HelloWorld.Run();
+        Examples.BasicStyling.Run();
+        Examples.CustomStyles.Run();
+        Examples.AdvancedStyling.Run();
+        Examples.Tables.Run();
+        Examples.Sections.Run();
+        Examples.Events.Run();
+        Examples.Toc.Run();
+        Examples.Highlighting.Run();
+        Examples.Features.Run();
+        Examples.Attributes.Run();
+        Examples.FullBook.Run();
+        //Examples.Plugins.Run();
     }
 }

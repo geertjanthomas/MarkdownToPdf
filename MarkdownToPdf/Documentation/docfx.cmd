@@ -1,1 +1,0 @@
-call d:\dev\docfx\docfx  docfx.json --serve

@@ -1,103 +1,99 @@
-﻿// This file is a part of MarkdownToPdf Library by Tomas Kubec
+// This file is a part of MarkdownToPdf Library by Geert-Jan Thomas based on earlier work by Tomas Kubec
 // Distributed under MIT license - see license.txt
 //
 
 using MigraDoc.DocumentObjectModel.Tables;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace Orionsoft.MarkdownToPdfLib.Styling
+namespace VectorAi.MarkdownToPdf.Styling.Style;
+
+/// <summary>
+/// Part of <see cref="CascadingStyle"/> defining table style
+/// </summary>
+
+public class TableStyle
 {
+    private List<TableColumnStyle> _columns;
+
     /// <summary>
-    /// Part of <see cref="CascadingStyle"/> defining table style
+    /// Alignnment of the entire table
+    /// </summary>
+    public RowAlignment? HorizontalAlignment { get; set; }
+
+    /// <summary>
+    /// Horizontal alignment of cell content. Can be directtly applied to a single cell as well
     /// </summary>
 
-    public class TableStyle
+    public VerticalAlignment? VerticalCellAlignment { get; set; }
+
+    public CellSpacingStyle CellSpacing { get; set; }
+
+    /// <summary>
+    /// Table width. If not defined, it is calucated from column widths
+    /// </summary>
+    public Dimension Width { get; set; }
+
+    /// <summary>
+    /// Collection of column definitions
+    /// </summary>
+    public IReadOnlyList<TableColumnStyle> Columns { get => _columns.AsReadOnly(); }
+
+    public TableStyle()
     {
-        private List<TableColumnStyle> columns;
+        CellSpacing = new CellSpacingStyle();
+        Width = new Dimension();
+        _columns = new List<TableColumnStyle>();
+    }
 
-        /// <summary>
-        /// Alignnment of the entire table
-        /// </summary>
-        public RowAlignment? HorizontalAlignment { get; set; }
+    /// <summary>
+    /// Adds column definition
+    /// </summary>
+    /// <returns></returns>
+    public TableColumnStyle AddColumn()
+    {
+        var c = new TableColumnStyle();
+        _columns.Add(c);
+        return c;
+    }
 
-        /// <summary>
-        /// Horizontal alignment of cell content. Can be directtly applied to a single cell as well
-        /// </summary>
-
-        public VerticalAlignment? VerticalCellAlignment { get; set; }
-
-        public CellSpacingStyle CellSpacing { get; set; }
-
-        /// <summary>
-        /// Table width. If not defined, it is calucated from column widths
-        /// </summary>
-        public Dimension Width { get; set; }
-
-        /// <summary>
-        /// Collection of column definitions
-        /// </summary>
-        public IReadOnlyList<TableColumnStyle> Columns { get => columns.AsReadOnly(); }
-
-        public TableStyle()
+    internal TableStyle MergeWith(TableStyle baseStyle)
+    {
+        var res = new TableStyle
         {
-            CellSpacing = new CellSpacingStyle();
-            Width = new Dimension();
-            columns = new List<TableColumnStyle>();
-        }
+            HorizontalAlignment = HorizontalAlignment.HasValue ? HorizontalAlignment : baseStyle.HorizontalAlignment,
+            VerticalCellAlignment = VerticalCellAlignment.HasValue ? VerticalCellAlignment : baseStyle.VerticalCellAlignment,
+            Width = !Width.IsEmpty ? Width : baseStyle.Width,
+        };
 
-        /// <summary>
-        /// Adds column definition
-        /// </summary>
-        /// <returns></returns>
-        public TableColumnStyle AddColumn()
-        {
-            var c = new TableColumnStyle();
-            columns.Add(c);
-            return c;
-        }
+        res.CellSpacing = CellSpacing.MergeWith(baseStyle.CellSpacing);
 
-        internal TableStyle MergeWith(TableStyle baseStyle)
+        var colCount = Math.Max(baseStyle._columns.Count, _columns.Count);
+        res._columns = new List<TableColumnStyle>();
+        for (var i = 0; i < colCount; i++)
         {
-            var res = new TableStyle
+            if (i < baseStyle.Columns.Count && i < _columns.Count)
             {
-                HorizontalAlignment = HorizontalAlignment.HasValue ? HorizontalAlignment : baseStyle.HorizontalAlignment,
-                VerticalCellAlignment = VerticalCellAlignment.HasValue ? VerticalCellAlignment : baseStyle.VerticalCellAlignment,
-                Width = !Width.IsEmpty ? Width : baseStyle.Width,
-            };
-
-            res.CellSpacing = CellSpacing.MergeWith(baseStyle.CellSpacing);
-
-            var colCount = Math.Max(baseStyle.columns.Count, columns.Count);
-            res.columns = new List<TableColumnStyle>();
-            for (var i = 0; i < colCount; i++)
-            {
-                if (i < baseStyle.Columns.Count && i < columns.Count)
-                {
-                    var t = Columns[i].MergeWith(baseStyle.Columns[i]);
-                    res.columns.Add(t);
-                }
-                else if (i < Columns.Count)
-                {
-                    var t = Columns[i].Clone();
-                    res.columns.Add(t);
-                }
-                else if (i < baseStyle.Columns.Count)
-                {
-                    var t = baseStyle.Columns[i].Clone();
-                    res.columns.Add(t);
-                }
+                var t = Columns[i].MergeWith(baseStyle.Columns[i]);
+                res._columns.Add(t);
             }
-
-            return res;
+            else if (i < Columns.Count)
+            {
+                var t = Columns[i].Clone();
+                res._columns.Add(t);
+            }
+            else if (i < baseStyle.Columns.Count)
+            {
+                var t = baseStyle.Columns[i].Clone();
+                res._columns.Add(t);
+            }
         }
 
-        internal TableColumnStyle GetColumnStyle(int index)
-        {
-            if (!columns.Any()) return new TableColumnStyle();
+        return res;
+    }
 
-            return index >= columns.Count ? columns.Last() : columns[index];
-        }
+    internal TableColumnStyle GetColumnStyle(int index)
+    {
+        if (!_columns.Any()) return new TableColumnStyle();
+
+        return index >= _columns.Count ? _columns.Last() : _columns[index];
     }
 }

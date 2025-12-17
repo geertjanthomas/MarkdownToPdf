@@ -1,39 +1,40 @@
-﻿// This file is a part of MarkdownToPdf Library by Tomas Kubec
+// This file is a part of MarkdownToPdf Library by Geert-Jan Thomas based on earlier work by Tomas Kubec
 // Distributed under MIT license - see license.txt
 //
 
 using Markdig.Extensions.Footnotes;
 using Markdig.Syntax;
-using Orionsoft.MarkdownToPdfLib.Styling;
-using System.Linq;
+using VectorAi.MarkdownToPdf.Styling;
 using System.Text.RegularExpressions;
 
-namespace Orionsoft.MarkdownToPdfLib.Converters
+namespace VectorAi.MarkdownToPdf.Converters.ContainerConverters;
+
+internal class FootnoteConverter : ContainerBlockConverter
 {
-    internal class FootnoteConverter : ContainerBlockConverter
+    internal FootnoteConverter(Markdig.Extensions.Footnotes.Footnote block, ContainerBlockConverter parent)
+        : base(block, parent)
     {
-        internal FootnoteConverter(Markdig.Extensions.Footnotes.Footnote block, ContainerBlockConverter parent)
-            : base(block, parent)
-        {
-            Attributes = new ElementAttributes(CustomGetTextBefore());
-            ElementDescriptor = new SingleElementDescriptor { Attributes = Attributes, Type = ElementType.Footnote, Position = new ElementPosition(Block) };
-        }
+        Attributes = new ElementAttributes(CustomGetTextBefore());
+        ElementDescriptor = new SingleElementDescriptor { Attributes = Attributes, Type = ElementType.Footnote, Position = new ElementPosition(Block) };
+    }
 
-        protected string CustomGetTextBefore()
+    protected string CustomGetTextBefore()
+    {
+        var p = Block.Parent;
+        while (p != null && p.Parent != null) p = p.Parent;
+        if (p != null && p.Any(x => x is LinkReferenceDefinitionGroup))
         {
-            var p = Block.Parent;
-            while (p != null && p.Parent != null) p = p.Parent;
-            if (p != null && p.Any(x => x is LinkReferenceDefinitionGroup))
+            var lrg = p.FirstOrDefault(x => x is LinkReferenceDefinitionGroup) as LinkReferenceDefinitionGroup;
+
+            if (lrg != null && lrg.FirstOrDefault(x => x is FootnoteLinkReferenceDefinition && (x as FootnoteLinkReferenceDefinition)!.Footnote == Block) is FootnoteLinkReferenceDefinition fng && fng.Line > 0)
             {
-                var lrg = p.First(x => x is LinkReferenceDefinitionGroup) as LinkReferenceDefinitionGroup;
-
-                if (lrg.FirstOrDefault(x => x is FootnoteLinkReferenceDefinition && (x as FootnoteLinkReferenceDefinition).Footnote == Block) is FootnoteLinkReferenceDefinition fng && fng.Line > 0)
+                if (Lines != null)
                 {
                     var text = Lines[fng.Line - 1].Trim();
                     if (Regex.IsMatch(text, @"^\{.+\}$")) return text;
                 }
             }
-            return "";
         }
+        return "";
     }
 }

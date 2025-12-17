@@ -1,10 +1,9 @@
-﻿// This file is a part of MarkdownToPdf Library by Tomas Kubec
+﻿// This file is a part of MarkdownToPdf Library by Geert-Jan Thomas based on earlier work by Tomas Kubec
 // Distributed under MIT license - see license.txt
 //
 
-namespace Orionsoft.MarkdownToPdfLib.Converters
+namespace VectorAi.MarkdownToPdf.Converters.ContainerConverters;
+
+internal interface IStandaloneContainerConverter
 {
-    internal interface IStandaloneContainerConverter
-    {
-    }
 }

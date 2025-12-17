@@ -1,29 +1,37 @@
-﻿using Orionsoft.MarkdownToPdfLib;
-using Orionsoft.MarkdownToPdfLib.Styling;
-using System;
-using System.IO;
+using VectorAi.MarkdownToPdf;
+using VectorAi.MarkdownToPdf.Styling;
 
-namespace Tests.Examples
+namespace Test10.Examples;
+
+/// <summary>
+/// Demonstration of:
+/// </summary>
+
+public static class Attributes
 {
-    /// <summary>
-    /// Demonstration of:
-    /// </summary>
-
-    public static class Attributes
+    public static void Run()
     {
-        public static void Run()
-        {
-            var markdown = File.ReadAllText("../../data/attributes.md");
+        var markdown = File.ReadAllText("../../../data/attributes.md");
 
-            var pdf = new MarkdownToPdf();
-            pdf.WarningIssued += (o, e) => { Console.WriteLine($"{e.Category}: {e.Message}"); };
+        var pdf = new MarkdownToPdf();
+        var fi = WindowsFontFinder.Find("Consolas");
+        if (fi != null)
+            pdf.RegisterLocalFont(
+                fi.Name,
+                fi.Regular,
+                fi.Bold,
+                fi.Italic,
+                fi.BoldItalic,
+                fi.Folder
+                );
 
-            var style = pdf.StyleManager.AddStyle("myList", MarkdownStyleNames.UnorderedListItem);
-            style.Bullet.Normal.Content = "*";
-            pdf.StyleManager.ForElement(ElementType.UnorderedListItem).WithParent(ElementType.UnorderedList, "myList").Bind(style);
-            pdf
-             .Add(markdown)
-             .Save("attributes.pdf");
-        }
+        pdf.WarningIssued += (o, e) => { Console.WriteLine($"{e.Category}: {e.Message}"); };
+
+        var style = pdf.StyleManager.AddStyle("myList", MarkdownStyleNames.UnorderedListItem);
+        style.Bullet.Normal.Content = "*";
+        pdf.StyleManager.ForElement(ElementType.UnorderedListItem).WithParent(ElementType.UnorderedList, "myList").Bind(style);
+        pdf
+         .Add(markdown)
+         .Save("attributes.pdf");
     }
 }
