@@ -12,8 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DemoHighlighter\DemoHighlighter.csproj" />
-    <ProjectReference Include="..\DemoImagePlugin\DemoImagePlugin.csproj" />
     <ProjectReference Include="..\MarkdownToPdf\MarkdownToPdf.csproj" />
   </ItemGroup>
 

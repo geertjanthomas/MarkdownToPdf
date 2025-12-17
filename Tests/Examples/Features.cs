@@ -13,33 +13,33 @@ public static class Features
 {
     public static void Run()
     {
-        //throw new NotImplementedException();
-        var markdown = File.ReadAllText("../../../data/features.md");
-        var footer = "{align=center}\r\nPage [](md:page)";
-        var pdf = new MarkdownToPdf();
-        var fi = WindowsFontFinder.Find("Wingdings");
-        if (fi != null)
-            pdf.RegisterLocalFont(fi.Name, fi.Regular, fi.Bold, fi.Italic, fi.BoldItalic);
+        throw new NotImplementedException();
+        //var markdown = File.ReadAllText("../../../data/features.md");
+        //var footer = "{align=center}\r\nPage [](md:page)";
+        //var pdf = new MarkdownToPdf();
+        //var fi = WindowsFontFinder.Find("Wingdings");
+        //if (fi != null)
+        //    pdf.RegisterLocalFont(fi.Name, fi.Regular, fi.Bold, fi.Italic, fi.BoldItalic);
 
-        pdf.PluginManager.Add(new DemoHighlighter.Highlighter());
+        //pdf.PluginManager.Add(new DemoHighlighter.Highlighter());
 
-        // definition of custom styles used in the document
-        var style = pdf.StyleManager.AddStyle("CustomListItem", MarkdownStyleNames.UnorderedListItem);
-        style.Bullet.Normal.Content = "\x7B";
-        style.Padding.Bottom = "12";
-        style.Bullet.Normal.Font.Name = "Wingdings";
+        //// definition of custom styles used in the document
+        //var style = pdf.StyleManager.AddStyle("CustomListItem", MarkdownStyleNames.UnorderedListItem);
+        //style.Bullet.Normal.Content = "\x7B";
+        //style.Padding.Bottom = "12";
+        //style.Bullet.Normal.Font.Name = "Wingdings";
 
-        style = pdf.StyleManager.AddStyle("NestedCustomContainer", MarkdownStyleNames.CustomContainer);
-        style.Background = Colors.LightSalmon;
-        pdf.StyleManager.ForElement(ElementType.CustomContainer).WithParent(ElementType.CustomContainer).Bind(style);
+        //style = pdf.StyleManager.AddStyle("NestedCustomContainer", MarkdownStyleNames.CustomContainer);
+        //style.Background = Colors.LightSalmon;
+        //pdf.StyleManager.ForElement(ElementType.CustomContainer).WithParent(ElementType.CustomContainer).Bind(style);
 
-        pdf
-         .PaperSize(PaperSize.A4)
-         .FontDir("../../../data/fonts")
-         .RegisterLocalFont("Roboto", regular: "Roboto-Light.ttf", bold: "Roboto-Bold.ttf", italic: "Roboto-Italic.ttf")
-         .DefaultFont("Roboto", 11)
-         .Add(markdown)
-         .AddFooter(footer)
-         .Save("features.pdf");
+        //pdf
+        // .PaperSize(PaperSize.A4)
+        // .FontDir("../../../data/fonts")
+        // .RegisterLocalFont("Roboto", regular: "Roboto-Light.ttf", bold: "Roboto-Bold.ttf", italic: "Roboto-Italic.ttf")
+        // .DefaultFont("Roboto", 11)
+        // .Add(markdown)
+        // .AddFooter(footer)
+        // .Save("features.pdf");
     }
 }

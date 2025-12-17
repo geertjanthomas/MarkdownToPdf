@@ -289,8 +289,8 @@ public sealed class MarkdownToPdf : IMarkdownToPdf
         DefaultPageSetup = MigraDocument.DefaultPageSetup.Clone();
         StyleManager = new StyleManager(this);
         PluginManager = new PluginManager(this);
-        GlobalFontSettings.FontResolver = GlobalFontSettings.FontResolver ?? new FontResolver("C:\\Windows\\Fonts");
-        GlobalFontSettings.FontResolver = (GlobalFontSettings.FontResolver as FontResolver) ?? new FontResolver("C:\\Windows\\Fonts");
+        GlobalFontSettings.FontResolver = GlobalFontSettings.FontResolver ?? new FontResolver();
+        GlobalFontSettings.FontResolver = (GlobalFontSettings.FontResolver as FontResolver) ?? new FontResolver();
 
         defaultStyles = new DefaultStyles(StyleManager);
         defaultStyles.CreateBasicStyles();
