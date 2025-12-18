@@ -14,7 +14,8 @@ public static class Tables
 {
     public static void Run()
     {
-        var markdown = File.ReadAllText("../../../data/tables.md");
+        var filePath = Path.Join(Program.BasePath(),"data/tables.md");
+        var markdown = File.ReadAllText(filePath);
 
         var pdf = new MarkdownToPdf();
 

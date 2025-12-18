@@ -11,7 +11,8 @@ public static class Toc
 {
     public static void Run()
     {
-        var markdown = File.ReadAllText("../../../data/toc.md");
+        var filePath = Path.Join(Program.BasePath(),"data/toc.md");
+        var markdown = File.ReadAllText(filePath);
 
         var pdf = new MarkdownToPdf();
 

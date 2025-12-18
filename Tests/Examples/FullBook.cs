@@ -1,6 +1,7 @@
 using VectorAi.MarkdownToPdf;
 using VectorAi.MarkdownToPdf.Styling;
 using MigraDoc.DocumentObjectModel;
+using System.Runtime.InteropServices;
 
 namespace Test10.Examples;
 
@@ -13,7 +14,9 @@ public static class FullBook
 {
     public static void Run()
     {
-        var markdown = File.ReadAllText("../../../data/alice.md");
+        var defaultFont = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "Garamond" : "Times New Roman";
+        var filePath = Path.Join(Program.BasePath(),"data/Alice.md");
+        var markdown = File.ReadAllText(filePath);
         var footer = "{.center}\r\n[](md:page)";
 
         var pdf = new MarkdownToPdf();
@@ -26,7 +29,7 @@ public static class FullBook
          .DefaultDpi(200)
          .Title("Alice's Adventures in Wonderland")
          .Author("Lewis Carroll")
-         .DefaultFont("Garamond", 12)
+         .DefaultFont(defaultFont, 12)
          .ImageDir("../../../data/")
          .PageMargins("2cm", "2cm", "2cm", "2.5cm")
          .Add(markdown)

@@ -1,6 +1,7 @@
 using VectorAi.MarkdownToPdf;
 using VectorAi.MarkdownToPdf.Styling;
 using MigraDoc.DocumentObjectModel;
+using System.Runtime.InteropServices;
 
 namespace Test10.Examples;
 
@@ -15,7 +16,11 @@ public static class CustomStyles
 {
     public static void Run()
     {
-        var markdown = File.ReadAllText("../../../data/customStyles.md");
+        var defaultFont = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "Calibri" : "Verdana";
+
+        var filePath = Path.Join(Program.BasePath(),"data/customStyles.md");
+        var markdown = File.ReadAllText(filePath);
+
         var pdf = new MarkdownToPdf();
 
         // style with modifyied bullet is bound to nested list item (list item with an ancestor - other list litem)
@@ -30,7 +35,7 @@ public static class CustomStyles
         pdf.StyleManager.ForElement(ElementType.Paragraph, "blue").Bind(style);
 
         pdf
-         .DefaultFont("Calibri", 11)
+         .DefaultFont(defaultFont, 11)
          .Add(markdown)
          .Save("customStyles.pdf");
     }

@@ -1,6 +1,7 @@
 using VectorAi.MarkdownToPdf;
 using VectorAi.MarkdownToPdf.Styling;
 using MigraDoc.DocumentObjectModel;
+using System.Runtime.InteropServices;
 
 namespace Test10.Examples;
 
@@ -15,15 +16,18 @@ public static class AdvancedStyling
 {
     public static void Run()
     {
-        var markdown = File.ReadAllText("../../../data/advanced.md");
+        var filePath = Path.Join(Program.BasePath(),"data/advanced.md");
+        var markdown = File.ReadAllText(filePath);
 
         var pdf = new MarkdownToPdf();
+
+        var dingFont = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "Wingdings 2" : "Webdings";
 
         // definition of asterism ruler - centered decorative symbol
         var asterismStyle = pdf.StyleManager.AddStyle("asterismRuler", MarkdownStyleNames.Break);
         asterismStyle.Paragraph.Alignment = ParagraphAlignment.Center;
         asterismStyle.Bullet.Normal.Content = "\xF9";
-        asterismStyle.Bullet.Normal.Font.Name = "Wingdings 2";
+        asterismStyle.Bullet.Normal.Font.Name = dingFont;
         asterismStyle.Bullet.Normal.Font.Size = "2em";
         asterismStyle.Margin.Top = 12;
         asterismStyle.Margin.Bottom = 12;
