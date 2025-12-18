@@ -5,6 +5,17 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>VectorAi.MarkdownToPdf</RootNamespace>
+
+    <!-- NuGet package metadata -->
+    <PackageId>VectorAi.MarkdownToPdf</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Geert-Jan Thomas</Authors>
+    <Company>VectorAi</Company>
+    <Description>Markdown to PDF converter library using Markdig and MigraDoc/PDFsharp.</Description>
+    <PackageTags>markdown pdf migradoc markdig pdfsharp</PackageTags>
+    <RepositoryUrl>https://github.com/geertjanthomas/MarkdownToPdf</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
