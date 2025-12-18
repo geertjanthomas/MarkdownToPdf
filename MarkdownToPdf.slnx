@@ -1,6 +1,10 @@
 <Solution>
-  <Project Path="DemoHighlighter/DemoHighlighter.csproj" />
-  <Project Path="DemoImagePlugin/DemoImagePlugin.csproj" />
+  <Project Path="DemoHighlighter/DemoHighlighter.csproj">
+    <Build Solution="Debug|*" Project="false" />
+  </Project>
+  <Project Path="DemoImagePlugin/DemoImagePlugin.csproj">
+    <Build Solution="Debug|*" Project="false" />
+  </Project>
   <Project Path="MarkdownToPdf/MarkdownToPdf.csproj" />
   <Project Path="Tests/Tests.csproj" />
 </Solution>

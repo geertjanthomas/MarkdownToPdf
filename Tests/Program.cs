@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using PdfSharp.Fonts;
 
 namespace Test10;
@@ -6,7 +7,14 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        GlobalFontSettings.UseWindowsFontsUnderWindows = true;
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            GlobalFontSettings.UseWindowsFontsUnderWindows = true;
+        }
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        {
+            GlobalFontSettings.UseWindowsFontsUnderWsl2 = true;
+        }
         RunAllExamples();
     }
 
@@ -25,7 +33,7 @@ internal class Program
         //Examples.Attributes.Run();
         //Examples.FullBook.Run();
 
-        // Ou of scope
+        // Out of scope
         //Examples.Plugins.Run();
     }
 }

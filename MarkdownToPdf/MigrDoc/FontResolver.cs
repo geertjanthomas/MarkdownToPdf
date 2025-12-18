@@ -30,7 +30,8 @@ internal class FontResolver : IFontResolver
 
         if (registeredFont == null)
         {
-            return PlatformFontResolver.ResolveTypeface(familyName, isBold, isItalic);
+            var fnt = PlatformFontResolver.ResolveTypeface(familyName, isBold, isItalic);
+            return fnt;
         }
 
         if (isBold)
