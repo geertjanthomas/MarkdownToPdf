@@ -405,19 +405,44 @@ internal class InlineConverter : IInlineConverter
             {
                 try
                 {
-                    using (System.Drawing.Image bitmapImage = System.Drawing.Image.FromFile(path))
+                    using (var image = SixLabors.ImageSharp.Image.Load(path))
                     {
-                        if (!img.Width.IsEmpty)
-                        {
-                            var aspect = (double)bitmapImage.Width / bitmapImage.HorizontalResolution / ((double)bitmapImage.Height / bitmapImage.VerticalResolution);
+                        // ImageSharp stores resolution in Metadata. Default to 96 if not present.
+                        double hRes = image.Metadata.HorizontalResolution > 0 ? image.Metadata.HorizontalResolution : 96.0;
+                        double vRes = image.Metadata.VerticalResolution > 0 ? image.Metadata.VerticalResolution : 96.0;
 
-                            OutputParagraph.Format?.SpaceAfter -= img.Width / aspect;
+                        if (image.Width != 0)
+                        {
+                            // Aspect ratio calculation based on physical dimensions
+                            var aspect = (double)image.Width / hRes / ((double)image.Height / vRes);
+
+                            if (OutputParagraph.Format != null)
+                            {
+                                OutputParagraph.Format.SpaceAfter -= image.Width / aspect;
+                            }
                         }
                         else
                         {
-                            OutputParagraph.Format?.SpaceAfter -= Unit.FromInch((double)bitmapImage.Height / bitmapImage.VerticalResolution);
+                            if (OutputParagraph.Format != null)
+                            {
+                                OutputParagraph.Format.SpaceAfter -= Unit.FromInch((double)image.Height / vRes);
+                            }
                         }
                     }
+
+                    //using (System.Drawing.Image bitmapImage = System.Drawing.Image.FromFile(path))
+                    //{
+                    //    if (!img.Width.IsEmpty)
+                    //    {
+                    //        var aspect = (double)bitmapImage.Width / bitmapImage.HorizontalResolution / ((double)bitmapImage.Height / bitmapImage.VerticalResolution);
+
+                    //        OutputParagraph.Format?.SpaceAfter -= img.Width / aspect;
+                    //    }
+                    //    else
+                    //    {
+                    //        OutputParagraph.Format?.SpaceAfter -= Unit.FromInch((double)bitmapImage.Height / bitmapImage.VerticalResolution);
+                    //    }
+                    //}
                 }
                 catch (OutOfMemoryException) { Parent.Owner.OnWarningIssued(this, "Image", "Read error: " + lnk.Url); }
                 catch (FileNotFoundException) { Parent.Owner.OnWarningIssued(this, "Image", "FileNotFound: " + lnk.Url); }

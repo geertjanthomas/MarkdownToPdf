@@ -3,10 +3,11 @@
 //
 
 using PdfSharp.Fonts;
+using System.Runtime.InteropServices;
 
 namespace VectorAi.MarkdownToPdf.MigrDoc;
 
-internal class FontResolver : IFontResolver
+public class FontResolver : IFontResolver
 {
     private readonly List<FontFamily> _fonts;
     public string Dir { get; set; } = "";
@@ -31,9 +32,38 @@ internal class FontResolver : IFontResolver
         if (registeredFont == null)
         {
             var fnt = PlatformFontResolver.ResolveTypeface(familyName, isBold, isItalic);
+            if (fnt == null)
+            {
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    var fi = WindowsFontFinder.Find(familyName);
+                    if (fi != null)
+                    {
+                        Register(
+                            fi.Name,
+                            fi.Regular,
+                            fi.Bold,
+                            fi.Italic,
+                            fi.BoldItalic,
+                            fi.Folder
+                            );
+                    }
+                    registeredFont = _fonts.FirstOrDefault(x => x.Name.ToLower() == name);
+                    if (registeredFont != null)
+                    {
+                        return ResolveRegisteredFont(registeredFont, isBold, isItalic);
+                    }
+                }
+
+            }
             return fnt;
         }
 
+        return ResolveRegisteredFont(registeredFont, isBold, isItalic);
+    }
+
+    private static FontResolverInfo ResolveRegisteredFont(FontFamily registeredFont, bool isBold, bool isItalic)
+    {
         if (isBold)
         {
             if (isItalic)

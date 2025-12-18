@@ -14,16 +14,6 @@ public static class Attributes
         var markdown = File.ReadAllText("../../../data/attributes.md");
 
         var pdf = new MarkdownToPdf();
-        var fi = WindowsFontFinder.Find("Consolas");
-        if (fi != null)
-            pdf.RegisterLocalFont(
-                fi.Name,
-                fi.Regular,
-                fi.Bold,
-                fi.Italic,
-                fi.BoldItalic,
-                fi.Folder
-                );
 
         pdf.WarningIssued += (o, e) => { Console.WriteLine($"{e.Category}: {e.Message}"); };
 

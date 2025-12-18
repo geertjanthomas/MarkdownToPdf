@@ -13,14 +13,24 @@
     <Company>VectorAi</Company>
     <Description>Markdown to PDF converter library using Markdig and MigraDoc/PDFsharp.</Description>
     <PackageTags>markdown pdf migradoc markdig pdfsharp</PackageTags>
+	<PackageReadmeFile>readme.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/geertjanthomas/MarkdownToPdf</RepositoryUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\readme.md" Link="readme.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Markdig" Version="0.44.0" />
     <PackageReference Include="PDFsharp-MigraDoc" Version="6.2.3" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
     <PackageReference Include="System.Drawing.Common" Version="10.0.1" />
   </ItemGroup>
 

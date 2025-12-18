@@ -17,21 +17,6 @@ public static class FullBook
         var footer = "{.center}\r\n[](md:page)";
 
         var pdf = new MarkdownToPdf();
-        var fontsNeeded = new List<string> { "Garamond", "Wingdings 2" };
-        foreach (var fontName in fontsNeeded)
-        {
-            var fi = WindowsFontFinder.Find(fontName);
-            if (fi != null)
-                pdf.RegisterLocalFont(
-                    fi.Name,
-                    fi.Regular,
-                    fi.Bold,
-                    fi.Italic,
-                    fi.BoldItalic,
-                    fi.Folder
-                    );
-        }
-
 
         DefineStyles(pdf);
 
@@ -42,7 +27,7 @@ public static class FullBook
          .Title("Alice's Adventures in Wonderland")
          .Author("Lewis Carroll")
          .DefaultFont("Garamond", 12)
-         .ImageDir("../../data/")
+         .ImageDir("../../../data/")
          .PageMargins("2cm", "2cm", "2cm", "2.5cm")
          .Add(markdown)
          .AddFooter(footer)

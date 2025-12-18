@@ -18,7 +18,6 @@ public static class AdvancedStyling
         var markdown = File.ReadAllText("../../../data/advanced.md");
 
         var pdf = new MarkdownToPdf();
-        pdf.RegisterLocalFont("Wingdings 2", "wingdng2.ttf");
 
         // definition of asterism ruler - centered decorative symbol
         var asterismStyle = pdf.StyleManager.AddStyle("asterismRuler", MarkdownStyleNames.Break);

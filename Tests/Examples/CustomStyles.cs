@@ -17,9 +17,6 @@ public static class CustomStyles
     {
         var markdown = File.ReadAllText("../../../data/customStyles.md");
         var pdf = new MarkdownToPdf();
-        
-        pdf.RegisterLocalFont("Calibri", "calibri.ttf", "calibrib.ttf", "calibrii.ttf", "calibriz.ttf");
-
 
         // style with modifyied bullet is bound to nested list item (list item with an ancestor - other list litem)
         var style = pdf.StyleManager.AddStyle("NestedListItem", MarkdownStyleNames.UnorderedListItem);

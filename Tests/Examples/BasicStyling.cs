@@ -1,6 +1,9 @@
-using VectorAi.MarkdownToPdf;
-using VectorAi.MarkdownToPdf.Styling;
 using MigraDoc.DocumentObjectModel;
+using PdfSharp.Fonts;
+using System.Runtime.InteropServices;
+using VectorAi.MarkdownToPdf;
+using VectorAi.MarkdownToPdf.MigrDoc;
+using VectorAi.MarkdownToPdf.Styling;
 
 namespace Test10.Examples;
 
@@ -20,16 +23,7 @@ public static class BasicStyling
         var footer = "{align=center}\r\n\\- [](md:page) - ";
 
         var pdf = new MarkdownToPdf();
-        var fi = WindowsFontFinder.Find("Garamond");
-        if (fi != null)
-            pdf.RegisterLocalFont(
-                fi.Name,
-                fi.Regular,
-                fi.Bold,
-                fi.Italic,
-                fi.BoldItalic,
-                fi.Folder
-                );
+        //pdf.RegisterLocalFont("Garamond");
 
         var paragraphStyle = pdf.StyleManager.Styles[MarkdownStyleNames.Paragraph];
         paragraphStyle.Paragraph.Alignment = ParagraphAlignment.Justify;
@@ -44,4 +38,8 @@ public static class BasicStyling
          .AddFooter(footer)
          .Save("alice.pdf");
     }
+
 }
+
+
+

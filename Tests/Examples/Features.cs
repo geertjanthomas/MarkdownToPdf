@@ -17,9 +17,7 @@ public static class Features
         //var markdown = File.ReadAllText("../../../data/features.md");
         //var footer = "{align=center}\r\nPage [](md:page)";
         //var pdf = new MarkdownToPdf();
-        //var fi = WindowsFontFinder.Find("Wingdings");
-        //if (fi != null)
-        //    pdf.RegisterLocalFont(fi.Name, fi.Regular, fi.Bold, fi.Italic, fi.BoldItalic);
+        //pdf.RegisterLocalFont("Wingdings");
 
         //pdf.PluginManager.Add(new DemoHighlighter.Highlighter());
 

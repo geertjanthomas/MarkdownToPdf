@@ -1,8 +1,7 @@
 using Microsoft.Win32;
 using System.Drawing.Text;
-using System.Net.NetworkInformation;
 
-namespace Test10;
+namespace VectorAi.MarkdownToPdf.MigrDoc;
 
 public class FontFinderInfo
 {
@@ -15,6 +14,7 @@ public class FontFinderInfo
 
 }
 
+[System.Runtime.Versioning.SupportedOSPlatform("windows")]
 public class WindowsFontFinder
 {
     public static FontFinderInfo? Find(string familyName)
