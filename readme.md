@@ -6,7 +6,7 @@ It also uses [ImageSharp from SixLabors](https://sixlabors.com/products/imagesha
 ## Disclaimer
 This is a fresh fork from [https://github.com/tkubec/MarkdownToPdf](https://github.com/tkubec/MarkdownToPdf) and upgraded to .NET 10.
 
-Not everything is ported and tested fully. 
+Not yet everything is ported and tested fully. 
 
 The aim is to keep up the support for new .NET versions and to ensure cross platform compatibility
 
@@ -50,18 +50,18 @@ pdf
 
 Please see the documentation for more information. Here are some sample PDF outputs: 
  
- - [Feature Overview (PDF)](https://github.com/tkubec/MarkdownToPdf/blob/master/Tests/output/features.pdf)
+ - [Feature Overview (PDF)](https://github.com/geertjanthomas/MarkdownToPdf/blob/main/Tests/output/features.pdf)
  
- - [Entire book (PDF)](https://github.com/tkubec/MarkdownToPdf/blob/master/Tests/output/book_alice.pdf)
+ - [Entire book (PDF)](https://github.com/geertjanthomas/MarkdownToPdf/blob/master/Tests/output/book_alice.pdf)
  
 # Installation
 
-The library is available as a NuGet package: [![](https://img.shields.io/badge/nuget-v1.0-blue)](https://www.nuget.org/packages/MarkdownToPdf)
+The library is available as a NuGet package: [![](https://img.shields.io/badge/nuget-v1.0-blue)](https://www.nuget.org/packages/VectorAi.MarkdownToPdf)
 
 # Plugins
 
 ## Syntax highlighter
-[MarkdownToPdf.SyntaxHighlighter](https://github.com/tkubec/MarkdownToPdf.SyntaxHighlighter) based on PrismSharp currently supports over 270 programming languages and has 44 built in visual themes
+[MarkdownToPdf.SyntaxHighlighter](https://github.com/geertjanthomas/MarkdownToPdf.SyntaxHighlighter) based on PrismSharp currently supports over 270 programming languages and has 44 built in visual themes
 
 # License
 This software is released under the MIT license.
