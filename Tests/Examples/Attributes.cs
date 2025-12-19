@@ -31,7 +31,6 @@ public static class Attributes
         var style = pdf.StyleManager.AddStyle("myList", MarkdownStyleNames.UnorderedListItem);
         style.Bullet.Normal.Content = "*";
         pdf.StyleManager.ForElement(ElementType.UnorderedListItem).WithParent(ElementType.UnorderedList, "myList").Bind(style);
-        pdf.StyleManager.ForElement(ElementType.InlineCode).Bind(fontstyle);
         pdf
          .ImageDir(imagePath)
          .Add(markdown)
