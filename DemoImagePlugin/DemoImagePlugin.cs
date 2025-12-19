@@ -1,7 +1,7 @@
-﻿using CSharpMath.SkiaSharp;
-using SkiaSharp;
-using System.Drawing;
-using System.Drawing.Imaging;
+﻿using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Drawing.Processing;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 using VectorAi.MarkdownToPdf.Converters;
 using VectorAi.MarkdownToPdf.Plugins;
 
@@ -31,17 +31,22 @@ public class DemoImagePlugin : IImagePlugin
 
         var w = 100;
         var h = 100;
-        using (var bitmap = new Bitmap(w, h))
-        {
-            bitmap.SetResolution(600, 600);
-            using (Graphics g = Graphics.FromImage(bitmap))
-            {
-                g.DrawLine(Pens.Black, 0, 0, w - 1, h - 1);
-                g.DrawLine(Pens.Black, w - 1, 0, 0, h - 1);
-            }
 
-            bitmap.Save(fileName, ImageFormat.Png);
+        // Use SixLabors.ImageSharp.Drawing for cross platform drawing
+        using (var image = new Image<Rgba32>(w, h))
+        {
+            image.Metadata.HorizontalResolution = 600;
+            image.Metadata.VerticalResolution = 600;
+
+            image.Mutate(ctx =>
+            {
+                ctx.DrawLine(Color.Black, 1f, new PointF(0, 0), new PointF(w - 1, h - 1));
+                ctx.DrawLine(Color.Black, 1f, new PointF(w - 1, 0), new PointF(0, h - 1));
+            });
+
+            image.SaveAsPng(fileName);
         }
+
         return new ImagePluginResult { FileName = fileName, Success = true };
     }
 
@@ -53,29 +58,7 @@ public class DemoImagePlugin : IImagePlugin
         var fileName = System.IO.Path.GetTempPath() +   Guid.NewGuid().ToString() + ".png";
 #endif
 
-
-
-        // Initialize the painter
-        var painter = new MathPainter();
-
-        // Set the LaTeX formula
-        painter.LaTeX = data;
-
-        // Set visual properties
-        painter.FontSize = 20;
-        painter.TextColor = SKColors.Black;
-
-        // The DrawAsStream method handles the rendering and encoding to PNG
-        using (Stream? stream = painter.DrawAsStream())
-        {
-            if (stream == null) throw new InvalidOperationException();
-
-            using (var fileStream = File.Create(fileName))
-            {
-                stream.CopyTo(fileStream);
-            }
-        }
-
+        // TODO: Find a way to convert LaTeX to a PNG image that is modern and safe
 
         return new ImagePluginResult { FileName = fileName, Success = true };
     }
