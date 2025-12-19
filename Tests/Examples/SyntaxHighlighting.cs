@@ -11,7 +11,8 @@ public static class SyntaxHighlighting
     public static void Run()
     {
         throw new NotImplementedException();
-        //var markdown = File.ReadAllText("../../data/test.md");
+        //var filePath = Path.Join(Program.BasePath(),"data/test.md");
+        //var markdown = File.ReadAllText(filePath);
         //var pdf = new MarkdownToPdf();
         //var hl = new Highlighter();
         //pdf.Plugins.Add(hl);

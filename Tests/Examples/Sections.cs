@@ -1,4 +1,6 @@
+using System.Runtime.InteropServices;
 using VectorAi.MarkdownToPdf;
+using VectorAi.MarkdownToPdf.Styling;
 
 namespace Test10.Examples;
 
@@ -12,8 +14,17 @@ public static class Sections
 {
     public static void Run()
     {
-        var markdown = File.ReadAllText("../../../data/sections.md");
+        var filePath = Path.Join(Program.BasePath(),"data/sections.md");
+        var markdown = File.ReadAllText(filePath);
         var pdf = new MarkdownToPdf();
+
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            // Default for InlineCode is Consolas but that is not cross platform available
+            var inlineCodeStyle = pdf.StyleManager.AddStyle("inlineCodeFont", MarkdownStyleNames.InlineCode);
+            inlineCodeStyle.Font.Name = "Courier New";
+            pdf.StyleManager.ForElement(ElementType.InlineCode).Bind(inlineCodeStyle);
+        }
 
         pdf.WarningIssued += (o, e) => { Console.WriteLine($"{e.Category}: {e.Message}"); };
 

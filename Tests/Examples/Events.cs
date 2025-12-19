@@ -3,6 +3,7 @@ using VectorAi.MarkdownToPdf.Converters;
 using VectorAi.MarkdownToPdf.Styling;
 using MigraDoc.DocumentObjectModel;
 using System.Text.RegularExpressions;
+using System.Runtime.InteropServices;
 
 namespace Test10.Examples;
 
@@ -18,9 +19,18 @@ public static class Events
 {
     public static void Run()
     {
-        var markdown = File.ReadAllText("../../../data/events.md");
+        var filePath = Path.Join(Program.BasePath(),"data/events.md");
+        var markdown = File.ReadAllText(filePath);
 
         var pdf = new MarkdownToPdf();
+
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            // Default for InlineCode is Consolas but that is not cross platform available
+            var inlineCodeStyle = pdf.StyleManager.AddStyle("inlineCodeFont", MarkdownStyleNames.InlineCode);
+            inlineCodeStyle.Font.Name = "Courier New";
+            pdf.StyleManager.ForElement(ElementType.InlineCode).Bind(inlineCodeStyle);
+        }
 
         // in a text span containing a single letter word followed by another world, the space is replaced by a non-breaking space
         pdf.ConvertingLiteral += (o, e) => e.Text = Regex.Replace(e.Text, @"(?<=\b\w\b)\s(?=\w)", "\x00A0");

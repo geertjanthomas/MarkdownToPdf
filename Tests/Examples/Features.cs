@@ -14,7 +14,8 @@ public static class Features
     public static void Run()
     {
         throw new NotImplementedException();
-        //var markdown = File.ReadAllText("../../../data/features.md");
+        //var filePath = Path.Join(Program.BasePath(),"data/features.md");
+        //var markdown = File.ReadAllText(filePath);
         //var footer = "{align=center}\r\nPage [](md:page)";
         //var pdf = new MarkdownToPdf();
         //pdf.RegisterLocalFont("Wingdings");

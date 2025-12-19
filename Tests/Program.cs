@@ -24,21 +24,46 @@ internal class Program
 
     private static void RunAllExamples()
     {
-        Examples.HelloWorld.Run();
-        Examples.HelloWorldWithImage.Run();
-        Examples.BasicStyling.Run();
-        Examples.CustomStyles.Run();
-        Examples.AdvancedStyling.Run();
-        Examples.Tables.Run();
-        Examples.Sections.Run();
-        Examples.Events.Run();
-        Examples.Toc.Run();
-        Examples.Attributes.Run();
-        Examples.FullBook.Run();
+        RunSafe(Examples.HelloWorld.Run);
+        RunSafe(Examples.HelloWorldWithImage.Run);
+        RunSafe(Examples.BasicStyling.Run);
+        RunSafe(Examples.CustomStyles.Run);
+        RunSafe(Examples.AdvancedStyling.Run);
+        RunSafe(Examples.Tables.Run);
+        RunSafe(Examples.Sections.Run);
+        RunSafe(Examples.Events.Run);
+        RunSafe(Examples.Toc.Run);
+        RunSafe(Examples.Attributes.Run);
+        RunSafe(Examples.FullBook.Run);
 
         // Out of scope
         //Examples.Features.Run();
         //Examples.Highlighting.Run();
         //Examples.Plugins.Run();
+    }
+
+    private static void RunSafe(Action action)
+    {
+        try
+        {
+            Console.WriteLine($"{action.Method.DeclaringType}.{action.Method.Name}");
+            action();
+        }
+        catch(Exception ex)
+        {
+            var clr = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(ex.Message);
+            Console.ForegroundColor = clr;
+        }
+    }
+
+    public static string BasePath()
+    {
+        var cd = Environment.CurrentDirectory;
+        var subs = cd.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries).ToList();
+        var idx = subs.FindIndex(s => s == "Tests");
+        var basePath = $"{Path.DirectorySeparatorChar}{string.Join(Path.DirectorySeparatorChar, subs.Slice(0,idx+1))}";
+        return basePath;
     }
 }

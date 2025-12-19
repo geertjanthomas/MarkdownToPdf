@@ -12,7 +12,8 @@ public static class Plugins
     {
         throw new NotImplementedException();
         //var dp = new DemoImagePlugin.DemoImagePlugin();
-        //var markdown = File.ReadAllText("../../../data/plugins.md");
+        //var filePath = Path.Join(Program.BasePath(),"data/plugins.md");
+        //var markdown = File.ReadAllText(filePath);
         //using (var pdf = new MarkdownToPdf())
         //{
         //    pdf.PluginManager.AddMathPlugin(dp);

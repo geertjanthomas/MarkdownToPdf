@@ -19,11 +19,14 @@ public static class BasicStyling
 {
     public static void Run()
     {
-        var markdown = File.ReadAllText("../../../data/alice1.md");
+        var filePath = Path.Join(Program.BasePath(),"data/alice1.md");
+
+        var markdown = File.ReadAllText(filePath);
         var footer = "{align=center}\r\n\\- [](md:page) - ";
 
         var pdf = new MarkdownToPdf();
-        //pdf.RegisterLocalFont("Garamond");
+
+        var defaultFont = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "Garamond" : "Times New Roman";
 
         var paragraphStyle = pdf.StyleManager.Styles[MarkdownStyleNames.Paragraph];
         paragraphStyle.Paragraph.Alignment = ParagraphAlignment.Justify;
@@ -33,7 +36,7 @@ public static class BasicStyling
          .PaperSize(PaperSize.B5)
          .Title("Alice's Adventures in Wonderland, Chapter I")
          .Author("Lewis Carroll")
-         .DefaultFont("Garamond", 12)
+         .DefaultFont(defaultFont, 12)
          .Add(markdown)
          .AddFooter(footer)
          .Save("alice.pdf");
