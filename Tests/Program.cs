@@ -35,11 +35,9 @@ internal class Program
         RunSafe(Examples.Toc.Run);
         RunSafe(Examples.Attributes.Run);
         RunSafe(Examples.FullBook.Run);
-
-        // Out of scope
-        //Examples.Features.Run();
-        //Examples.Highlighting.Run();
-        //Examples.Plugins.Run();
+        RunSafe(Examples.Features.Run);
+        RunSafe(Examples.Highlighting.Run);
+        RunSafe(Examples.Plugins.Run);
     }
 
     private static void RunSafe(Action action)
@@ -63,7 +61,11 @@ internal class Program
         var cd = Environment.CurrentDirectory;
         var subs = cd.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries).ToList();
         var idx = subs.FindIndex(s => s == "Tests");
-        var basePath = $"{Path.DirectorySeparatorChar}{string.Join(Path.DirectorySeparatorChar, subs.Slice(0,idx+1))}";
+        var basePath = $"{string.Join(Path.DirectorySeparatorChar, subs.Slice(0, idx + 1))}";
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            basePath = $"{Path.DirectorySeparatorChar}{basePath}";
+        }
         return basePath;
     }
 }

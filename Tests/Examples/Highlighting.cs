@@ -10,14 +10,14 @@ public static class Highlighting
 {
     public static void Run()
     {
-        throw new NotImplementedException("DemoHighlighter is not yet ported to .NET 10.");
-        //var filePath = Path.Join(Program.BasePath(),"data/highlighting.md");
-        //var markdown = File.ReadAllText(filePath);
-        //var pdf = new MarkdownToPdf();
-        //pdf.PluginManager.Add(new DemoHighlighter.Highlighter());
-        //pdf.WarningIssued += (o, e) => { Console.WriteLine($"{e.Category}: {e.Message}"); };
+        //throw new NotImplementedException("DemoHighlighter is not yet ported to .NET 10.");
+        var filePath = Path.Join(Program.BasePath(), "data/highlighting.md");
+        var markdown = File.ReadAllText(filePath);
+        var pdf = new MarkdownToPdf();
+        pdf.PluginManager.Add(new DemoHighlighter.PythonHighlighter());
+        pdf.WarningIssued += (o, e) => { Console.WriteLine($"{e.Category}: {e.Message}"); };
 
-        //pdf.Add(markdown)
-        //    .Save("highlighting.pdf");
+        pdf.Add(markdown)
+            .Save("highlighting.pdf");
     }
 }

@@ -1,7 +1,9 @@
-﻿using VectorAi.MarkdownToPdf.Converters;
-using VectorAi.MarkdownToPdf.Plugins;
+﻿using CSharpMath.SkiaSharp;
+using SkiaSharp;
 using System.Drawing;
 using System.Drawing.Imaging;
+using VectorAi.MarkdownToPdf.Converters;
+using VectorAi.MarkdownToPdf.Plugins;
 
 namespace DemoImagePlugin;
 
@@ -51,7 +53,29 @@ public class DemoImagePlugin : IImagePlugin
         var fileName = System.IO.Path.GetTempPath() +   Guid.NewGuid().ToString() + ".png";
 #endif
 
-        // TODO: Find a way to convert LaTeX to a PNG image 
+
+
+        // Initialize the painter
+        var painter = new MathPainter();
+
+        // Set the LaTeX formula
+        painter.LaTeX = data;
+
+        // Set visual properties
+        painter.FontSize = 20;
+        painter.TextColor = SKColors.Black;
+
+        // The DrawAsStream method handles the rendering and encoding to PNG
+        using (Stream? stream = painter.DrawAsStream())
+        {
+            if (stream == null) throw new InvalidOperationException();
+
+            using (var fileStream = File.Create(fileName))
+            {
+                stream.CopyTo(fileStream);
+            }
+        }
+
 
         return new ImagePluginResult { FileName = fileName, Success = true };
     }

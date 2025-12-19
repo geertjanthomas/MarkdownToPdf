@@ -4,10 +4,10 @@
     <File Path=".github/workflows/ci.yml" />
   </Folder>
   <Project Path="DemoHighlighter/DemoHighlighter.csproj">
-    <Build Project="false" />
+    <Build Solution="Release|*" Project="false" />
   </Project>
   <Project Path="DemoImagePlugin/DemoImagePlugin.csproj">
-    <Build Project="false" />
+    <Build Solution="Release|*" Project="false" />
   </Project>
   <Project Path="MarkdownToPdf/MarkdownToPdf.csproj" />
   <Project Path="Tests/Tests.csproj" />

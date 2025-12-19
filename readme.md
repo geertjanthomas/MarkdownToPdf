@@ -1,6 +1,14 @@
 # MarkdownToPdf Library
 
-MarkdownToPdf is a .NET library serving as a converter of markdown text to PDF. It supports fully customizable styling via cascading styles, page setup, headers and footers, page numbering, sections, page and sections breaks  and it also supports plugins for features like syntax highlighting or for displaying mathematical expressions. Technically it uses [markdig](https://github.com/xoofx/markdig) library to parse the markdown document an [Pdfsharp/Migradoc](http://www.pdfsharp.net/) library to render the output.
+MarkdownToPdf is a .NET library serving as a converter of markdown text to PDF. It supports fully customizable styling via cascading styles, page setup, headers and footers, page numbering, sections, page and sections breaks  and it also supports plugins for features like syntax highlighting or for displaying mathematical expressions. Technically it uses [markdig](https://github.com/xoofx/markdig) library to parse the markdown document and [Pdfsharp/Migradoc](http://www.pdfsharp.net/) library to render the output.
+It also uses [ImageSharp from SixLabors](https://sixlabors.com/products/imagesharp/) to handle cross platform image rendering.
+
+## Disclaimer
+This is a fresh fork from [https://github.com/tkubec/MarkdownToPdf](https://github.com/tkubec/MarkdownToPdf) and upgraded to .NET 10.
+
+Not everything is ported and tested fully. 
+
+The aim is to keep up the support for new .NET versions and to ensure cross platform compatibility
 
 # Supported markdown flavors and extensions
 

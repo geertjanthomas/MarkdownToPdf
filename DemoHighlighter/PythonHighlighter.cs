@@ -6,7 +6,7 @@ using VectorAi.MarkdownToPdf.Plugins;
 
 namespace DemoHighlighter
 {
-    public class Highlighter : IHighlightingPlugin
+    public class PythonHighlighter : IHighlightingPlugin
     {
         public HighlightingPluginResult Convert(List<string> lines, IElementConverter converter)
         {
@@ -22,7 +22,7 @@ namespace DemoHighlighter
                 { "number", new Regex("\\b0(?:b(?:_?[01])+|o(?:_?[0-7])+|x(?:_?[a-f0-9])+)\\b|(?:\\b\\d+(?:_\\d+)*(?:\\.(?:\\d+(?:_\\d+)*)?)?|\\B\\.\\d+(?:_\\d+)*)(?:e[+-]?\\d+(?:_\\d+)*)?j?(?!\\w)", RegexOptions.IgnoreCase)},
                 { "operator", new Regex("[-+%=]=?|!=|:=|\\*\\*?=?|\\/\\/?=?|<[<=>]?|>[=>]?|[&|^~]") },
                 { "punct", new Regex("[{}[\\];(),.:]") }
-        };
+            };
 
             var theme = new Dictionary<string, Color>  {
                 { "comment", Color.Gray },

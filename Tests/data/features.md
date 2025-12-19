@@ -94,7 +94,7 @@ Autoconverted link http://www.google.com is also possible
 
 ## Images
 
-![Clock](../../data/images/clock.png)
+![Clock](clock.png)
 
 
 # Extended features
