@@ -3,12 +3,8 @@
   <Folder Name="/Solution Items/workflows/">
     <File Path=".github/workflows/ci.yml" />
   </Folder>
-  <Project Path="DemoHighlighter/DemoHighlighter.csproj">
-    <Build Project="false" />
-  </Project>
-  <Project Path="DemoImagePlugin/DemoImagePlugin.csproj">
-    <Build Project="false" />
-  </Project>
+  <Project Path="DemoHighlighter/DemoHighlighter.csproj" />
+  <Project Path="DemoImagePlugin/DemoImagePlugin.csproj" />
   <Project Path="MarkdownToPdf/MarkdownToPdf.csproj" />
   <Project Path="Tests/Tests.csproj" />
 </Solution>

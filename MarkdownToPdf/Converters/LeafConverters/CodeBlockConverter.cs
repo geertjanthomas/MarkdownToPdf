@@ -33,7 +33,7 @@ internal class CodeBlockConverter : LeafBlockConverter<CodeBlock>
     {
         base.PrepareStyling();
 
-        // We need to preprocess the lines and  access thhe plugins now, bwcause they change the styling
+        // We need to preprocess the lines and  access the plugins now, because they change the styling
 
         var linesGroup = Block is FencedCodeBlock fenced ? fenced.Lines : (Block as CodeBlock)!.Lines;
         var lines = new List<string>();

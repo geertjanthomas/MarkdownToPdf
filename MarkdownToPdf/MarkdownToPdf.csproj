@@ -12,19 +12,21 @@
     <Authors>Geert-Jan Thomas</Authors>
     <Company>VectorAi</Company>
     <Description>Markdown to PDF converter library using Markdig and MigraDoc/PDFsharp.</Description>
-    <PackageTags>markdown pdf migradoc markdig pdfsharp</PackageTags>
-	<PackageReadmeFile>readme.md</PackageReadmeFile>
+    <PackageTags>markdown pdf migradoc markdig pdfsharp .net10</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/geertjanthomas/MarkdownToPdf</RepositoryUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\readme.md" Link="readme.md">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>

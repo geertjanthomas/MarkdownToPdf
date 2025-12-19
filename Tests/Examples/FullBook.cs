@@ -15,11 +15,18 @@ public static class FullBook
     public static void Run()
     {
         var defaultFont = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "Garamond" : "Times New Roman";
+        var imagePath = Path.Join(Program.BasePath(), "data");
+        var fontPath = Path.Join(Program.BasePath(), "data/fonts");
         var filePath = Path.Join(Program.BasePath(),"data/Alice.md");
         var markdown = File.ReadAllText(filePath);
         var footer = "{.center}\r\n[](md:page)";
 
         var pdf = new MarkdownToPdf();
+
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            pdf.RegisterLocalFont("Wingdings 2", regular: "Wingdings 2.ttf");
+        }
 
         DefineStyles(pdf);
 
@@ -30,7 +37,8 @@ public static class FullBook
          .Title("Alice's Adventures in Wonderland")
          .Author("Lewis Carroll")
          .DefaultFont(defaultFont, 12)
-         .ImageDir("../../../data/")
+         .ImageDir(imagePath)
+         .FontDir(fontPath)
          .PageMargins("2cm", "2cm", "2cm", "2.5cm")
          .Add(markdown)
          .AddFooter(footer)
