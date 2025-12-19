@@ -1,4 +1,6 @@
+using System.Runtime.InteropServices;
 using VectorAi.MarkdownToPdf;
+using VectorAi.MarkdownToPdf.Styling;
 
 namespace Test10.Examples;
 
@@ -16,6 +18,18 @@ public static class Highlighting
         var pdf = new MarkdownToPdf();
         pdf.PluginManager.Add(new DemoHighlighter.PythonHighlighter());
         pdf.WarningIssued += (o, e) => { Console.WriteLine($"{e.Category}: {e.Message}"); };
+
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            // Default for InlineCode is Consolas but that is not cross platform available
+            var inlineCodeFontStyle = pdf.StyleManager.AddStyle("inlineCodeFont", MarkdownStyleNames.InlineCode);
+            inlineCodeFontStyle.Font.Name = "Courier New";
+            pdf.StyleManager.ForElement(ElementType.InlineCode).Bind(inlineCodeFontStyle);
+
+            var codeFontStyle = pdf.StyleManager.AddStyle("blockCodeFont", MarkdownStyleNames.Code);
+            codeFontStyle.Font.Name = "Courier New";
+            pdf.StyleManager.ForElement(ElementType.Code).Bind(codeFontStyle);
+        }
 
         pdf.Add(markdown)
             .Save("highlighting.pdf");

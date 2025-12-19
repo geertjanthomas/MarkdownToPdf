@@ -37,7 +37,7 @@ internal class Program
         RunSafe(Examples.FullBook.Run);
         RunSafe(Examples.Features.Run);
         RunSafe(Examples.Highlighting.Run);
-        RunSafe(Examples.Plugins.Run);
+        //RunSafe(Examples.Plugins.Run);
     }
 
     private static void RunSafe(Action action)

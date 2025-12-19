@@ -1,6 +1,7 @@
 using VectorAi.MarkdownToPdf;
 using VectorAi.MarkdownToPdf.Styling;
 using MigraDoc.DocumentObjectModel;
+using System.Runtime.InteropServices;
 
 namespace Test10.Examples;
 
@@ -22,6 +23,20 @@ public static class Features
         var pdf = new MarkdownToPdf();
 
         pdf.PluginManager.Add(new DemoHighlighter.PythonHighlighter());
+
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            // Default for InlineCode is Consolas but that is not cross platform available
+            var inlineCodeFontStyle = pdf.StyleManager.AddStyle("inlineCodeFont", MarkdownStyleNames.InlineCode);
+            inlineCodeFontStyle.Font.Name = "Courier New";
+            pdf.StyleManager.ForElement(ElementType.InlineCode).Bind(inlineCodeFontStyle);
+            
+            var codeFontStyle = pdf.StyleManager.AddStyle("blockCodeFont", MarkdownStyleNames.Code);
+            codeFontStyle.Font.Name = "Courier New";
+            pdf.StyleManager.ForElement(ElementType.Code).Bind(codeFontStyle);
+
+            pdf.RegisterLocalFont("Wingdings", regular: "wingding.ttf");
+        }
 
         // definition of custom styles used in the document
         var style = pdf.StyleManager.AddStyle("CustomListItem", MarkdownStyleNames.UnorderedListItem);
