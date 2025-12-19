@@ -9,13 +9,13 @@ namespace DemoImagePlugin;
 
 public class DemoImagePlugin : IImagePlugin
 {
-    private string? data;
-    private IElementConverter? converter;
+    private string? _data;
+    private IElementConverter? _converter;
 
     public ImagePluginResult Convert(string data, IElementConverter converter)
     {
-        this.data = data;
-        this.converter = converter;
+        _data = data;
+        _converter = converter;
 
         if (converter.Attributes?.Info == "math") return Math();
         return SomeImagePlugin();

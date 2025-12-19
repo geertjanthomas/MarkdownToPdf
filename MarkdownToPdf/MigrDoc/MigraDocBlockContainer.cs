@@ -55,8 +55,8 @@ public class MigraDocBlockContainer
 
     internal MigraDocBlockContainer(HeaderFooter headerFooter, MarkdownToPdf owner)
     {
-        this.HeaderFooter = headerFooter;
-        this.Owner = owner;
+        HeaderFooter = headerFooter;
+        Owner = owner;
     }
 
     //

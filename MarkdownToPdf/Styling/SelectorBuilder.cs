@@ -17,7 +17,7 @@ public class SelectorBuilder
 
     internal SelectorBuilder(StyleManager styleManager, ElementType type, string styleName)
     {
-        this._styleManager = styleManager;
+        _styleManager = styleManager;
         _selectors = new List<StyleSelector>
             {
                 new StyleSelector { ElementType = type, StyleName = styleName }

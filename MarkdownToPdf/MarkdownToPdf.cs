@@ -175,14 +175,14 @@ public sealed class MarkdownToPdf : IMarkdownToPdf
     public IMarkdownToPdf FooterDistance(Dimension distance)
     {
         PageSetup target = GetCurrentPageSetup();
-        target.FooterDistance = distance.Eval(defaultStyles.fontSize, RealPageWidth.Point);
+        target.FooterDistance = distance.Eval(defaultStyles._fontSize, RealPageWidth.Point);
         return this;
     }
 
     public IMarkdownToPdf HeaderDistance(Dimension distance)
     {
         PageSetup target = GetCurrentPageSetup();
-        target.HeaderDistance = distance.Eval(defaultStyles.fontSize, RealPageWidth.Point);
+        target.HeaderDistance = distance.Eval(defaultStyles._fontSize, RealPageWidth.Point);
         return this;
     }
 
@@ -201,10 +201,10 @@ public sealed class MarkdownToPdf : IMarkdownToPdf
     public IMarkdownToPdf PageMargins(Dimension left, Dimension right, Dimension top, Dimension bottom)
     {
         PageSetup target = GetCurrentPageSetup();
-        target.LeftMargin = left.Eval(defaultStyles.fontSize, RealPageWidth.Point);
-        target.RightMargin = right.Eval(defaultStyles.fontSize, RealPageWidth.Point);
-        target.TopMargin = top.Eval(defaultStyles.fontSize, RealPageWidth.Point);
-        target.BottomMargin = bottom.Eval(defaultStyles.fontSize, RealPageWidth.Point);
+        target.LeftMargin = left.Eval(defaultStyles._fontSize, RealPageWidth.Point);
+        target.RightMargin = right.Eval(defaultStyles._fontSize, RealPageWidth.Point);
+        target.TopMargin = top.Eval(defaultStyles._fontSize, RealPageWidth.Point);
+        target.BottomMargin = bottom.Eval(defaultStyles._fontSize, RealPageWidth.Point);
         return this;
     }
 

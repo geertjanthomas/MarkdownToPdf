@@ -4,7 +4,6 @@
 
 using VectorAi.MarkdownToPdf.Converters;
 using VectorAi.MarkdownToPdf.Plugins;
-using VectorAi.MarkdownToPdf.Utils;
 
 namespace VectorAi.MarkdownToPdf;
 
@@ -20,7 +19,7 @@ public sealed class PluginManager
 
     internal PluginManager(MarkdownToPdf owner)
     {
-        this._owner = owner;
+        _owner = owner;
     }
 
     /// <summary>

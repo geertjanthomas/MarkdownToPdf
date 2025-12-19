@@ -5,6 +5,7 @@
   </Folder>
   <Project Path="DemoHighlighter/DemoHighlighter.csproj" />
   <Project Path="DemoImagePlugin/DemoImagePlugin.csproj" />
+  <Project Path="MarkdownToPdf.Tests/MarkdownToPdf.Tests.csproj" Id="743b35b8-8de1-419d-80ea-fee7932fba3d" />
   <Project Path="MarkdownToPdf/MarkdownToPdf.csproj" />
   <Project Path="Tests/Tests.csproj" />
 </Solution>

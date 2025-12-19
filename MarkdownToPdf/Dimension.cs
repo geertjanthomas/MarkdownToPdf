@@ -29,7 +29,7 @@ public class Dimension
 
     private Dimension(List<(DimensionUnit Unit, double Value)> content)
     {
-        this._content = content;
+        _content = content;
     }
 
     /// <summary>

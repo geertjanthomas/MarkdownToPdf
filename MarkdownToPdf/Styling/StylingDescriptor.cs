@@ -27,7 +27,7 @@ public class StylingDescriptor
 
     internal StylingDescriptor(List<SingleElementDescriptor> descriptors)
     {
-        this.Descriptors = descriptors ?? new List<SingleElementDescriptor>();
+        Descriptors = descriptors ?? new List<SingleElementDescriptor>();
     }
 
     public bool HasParent(ElementType t, string styleName = "")

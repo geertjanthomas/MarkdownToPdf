@@ -147,10 +147,10 @@ internal abstract class ContainerBlockConverter : BlockConverterBase
 
         if (block is TableRow || block is TableCell                         // cannot have attributtes before
              || block is FootnoteGroup                                      // cannot have attributtes before
-             || block is Markdig.Extensions.Footnotes.Footnote                                           // has own GetTextBefore
+             || block is Footnote                                           // has own GetTextBefore
            ) return "";
 
-        if (block is Markdig.Extensions.Tables.Table && block.Parser is GridTableParser) return "";    // has own GetTextBefore
+        if (block is Table && block.Parser is GridTableParser) return "";    // has own GetTextBefore
 
         if (block.First().Span.Start < 0 || block.Span.Start < 0 || block.First().Span.Start < block.Span.Start || block.Span.Start == 0 && block.Line > 0)
         {

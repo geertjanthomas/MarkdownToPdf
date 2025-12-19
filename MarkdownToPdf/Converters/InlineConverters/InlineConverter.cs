@@ -33,15 +33,15 @@ internal class InlineConverter : IInlineConverter
     public SingleElementDescriptor ElementDescriptor { get; protected set; }
     public StylingDescriptor Descriptor => new StylingDescriptor(GetDescriptors());
 
-    public InlineConverter(Inline inline, InlineConverter? Parent, IBlockConverter ParentBlock,
-        MigrDocInlineContainer OutputParagraph, FontStyle? formatting = null)
+    public InlineConverter(Inline inline, InlineConverter? parent, IBlockConverter parentBlock,
+        MigrDocInlineContainer outputParagraph, FontStyle? formatting = null)
     {
         formatting = formatting ?? new FontStyle();
-        this.Inline = inline;
-        this._formatting = formatting;
-        this.OutputParagraph = OutputParagraph;
-        this.Parent = ParentBlock;
-        this.ParentInlineConverter = Parent;
+        Inline = inline;
+        _formatting = formatting;
+        OutputParagraph = outputParagraph;
+        Parent = parentBlock;
+        ParentInlineConverter = parent;
 
         Attributes = new ElementAttributes(GetTextAfter());
 

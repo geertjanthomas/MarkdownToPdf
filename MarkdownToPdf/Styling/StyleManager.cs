@@ -26,7 +26,7 @@ public class StyleManager
 
     internal StyleManager(MarkdownToPdf owner)
     {
-        this.Owner = owner;
+        Owner = owner;
         _bindings = new Dictionary<List<StyleSelector>, (CascadingStyle Style, Action<CascadingStyle, StylingDescriptor> ModificationMethod)>();
 
         _styles = new Dictionary<string, CascadingStyle>();

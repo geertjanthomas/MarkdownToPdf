@@ -10,17 +10,17 @@ namespace VectorAi.MarkdownToPdf.Styling;
 internal class DefaultStyles
 {
     private readonly StyleManager _styleManager;
-    internal double fontSize;
+    internal double _fontSize;
     private double _headingScale;
-    internal string fontName;
+    internal string _fontName;
     private Color _codeBg = Color.FromRgb(240, 240, 240);
     private readonly double _defaultIndent;
 
     internal DefaultStyles(StyleManager styleManager)
     {
-        this._styleManager = styleManager;
-        fontName = "Arial";
-        fontSize = 11;
+        _styleManager = styleManager;
+        _fontName = "Arial";
+        _fontSize = 11;
         _defaultIndent = 2;
         _headingScale = 1.125;
     }
@@ -211,8 +211,8 @@ internal class DefaultStyles
 
     internal void SetDefaultFont(string fontName, double fontSize)
     {
-        this.fontName = fontName;
-        this.fontSize = fontSize;
+        _fontName = fontName;
+        _fontSize = fontSize;
 
         var root = _styleManager.Styles[MarkdownStyleNames.Root];
         root.Font.Name = fontName;
@@ -224,8 +224,8 @@ internal class DefaultStyles
         CascadingStyle style;
 
         style = _styleManager.Styles[MarkdownStyleNames.Root];
-        style.Font.Name = fontName;
-        style.Font.Size = fontSize;
+        style.Font.Name = _fontName;
+        style.Font.Size = _fontSize;
 
         style = _styleManager.Styles[MarkdownStyleNames.UnorderedList];
         style.Margin.Left = Dimension.FromFontSize(_defaultIndent);
@@ -277,7 +277,7 @@ internal class DefaultStyles
         style.Bullet.BulletIndent = Dimension.FromFontSize(_defaultIndent * 0.8);
 
         style = _styleManager.Styles[MarkdownStyleNames.FootnoteGroup];
-        style.Margin.Top = Unit.FromPoint(fontSize);
+        style.Margin.Top = Unit.FromPoint(_fontSize);
 
         style = _styleManager.Styles[MarkdownStyleNames.Table];
         style.Margin.Top = "1em";
@@ -378,7 +378,7 @@ internal class DefaultStyles
         style.Font.Name = "Consolas";
         style.Font.Size = "1em";
         style.Background = _codeBg;
-        style.Margin.Bottom = fontSize;
+        style.Margin.Bottom = _fontSize;
         style.Margin.Top = ".5em";
         style.Padding.Bottom = ".5em";
         style.Padding.Left = ".5em";
