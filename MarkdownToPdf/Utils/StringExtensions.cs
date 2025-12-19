@@ -1,19 +1,13 @@
-﻿// This file is a part of MarkdownToPdf Library by Tomas Kubec
+// This file is a part of MarkdownToPdf Library by Geert-Jan Thomas based on earlier work by Tomas Kubec
 // Distributed under MIT license - see license.txt
 //
 
-namespace Orionsoft.MarkdownToPdfLib
-{
-    internal static class StringExtensions
-    {
-        public static bool HasValue(this string str)
-        {
-            return (str != null && str.Length > 0);
-        }
+namespace VectorAi.MarkdownToPdf.Utils;
 
-        public static string TrimStart(this string str, char c)
-        {
-            return str.TrimStart(new[] { c });
-        }
+internal static class StringExtensions
+{
+    public static string TrimStart(this string str, char c)
+    {
+        return str.TrimStart(new[] { c });
     }
 }

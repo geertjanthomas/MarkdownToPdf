@@ -1,27 +1,37 @@
-﻿using Orionsoft.MarkdownToPdfLib;
-using System;
-using System.IO;
+using System.Runtime.InteropServices;
+using VectorAi.MarkdownToPdf;
+using VectorAi.MarkdownToPdf.Styling;
 
-namespace Tests.Examples
+namespace Test10.Examples;
+
+/// <summary>
+/// Demonstration of:
+///   - section breaks
+///   - section numbering
+/// </summary>
+
+public static class Sections
 {
-    /// <summary>
-    /// Demonstration of:
-    ///   - section breaks
-    ///   - section numbering
-    /// </summary>
-
-    public static class Sections
+    public static void Run()
     {
-        public static void Run()
+        var filePath = Path.Join(Program.BasePath(),"data/sections.md");
+        var markdown = File.ReadAllText(filePath);
+        var pdf = new MarkdownToPdf();
+
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            var markdown = File.ReadAllText("../../data/sections.md");
-            var pdf = new MarkdownToPdf();
-            pdf.WarningIssued += (o, e) => { Console.WriteLine($"{e.Category}: {e.Message}"); };
+            // Default for InlineCode is Consolas but that is not cross platform available
+            var inlineCodeStyle = pdf.StyleManager.AddStyle("inlineCodeFont", MarkdownStyleNames.InlineCode);
+            inlineCodeStyle.Font.Name = "Courier New";
+            pdf.StyleManager.ForElement(ElementType.InlineCode).Bind(inlineCodeStyle);
+        }
 
-            // by default, section starts with page 42 (just for demonstration purposes)
-            pdf.DefaultPageSetup.StartingNumber = 42;
+        pdf.WarningIssued += (o, e) => { Console.WriteLine($"{e.Category}: {e.Message}"); };
 
-            pdf
+        // by default, section starts with page 42 (just for demonstration purposes)
+        pdf.DefaultPageSetup.StartingNumber = 42;
+
+        pdf
             .PageMargins(left: "1cm", right: "1cm", top: "2cm", bottom: "3cm")
             .PaperSize(PaperSize.A5)
 
@@ -45,6 +55,5 @@ namespace Tests.Examples
             .Add(markdown)
 
             .Save("sections.pdf");
-        }
     }
 }

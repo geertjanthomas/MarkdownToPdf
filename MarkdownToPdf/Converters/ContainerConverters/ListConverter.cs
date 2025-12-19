@@ -1,23 +1,22 @@
-﻿// This file is a part of MarkdownToPdf Library by Tomas Kubec
+// This file is a part of MarkdownToPdf Library by Geert-Jan Thomas based on earlier work by Tomas Kubec
 // Distributed under MIT license - see license.txt
 //
 
 using Markdig.Syntax;
-using Orionsoft.MarkdownToPdfLib.Styling;
+using VectorAi.MarkdownToPdf.Styling;
 
-namespace Orionsoft.MarkdownToPdfLib.Converters
+namespace VectorAi.MarkdownToPdf.Converters.ContainerConverters;
+
+internal class ListConverter : ContainerBlockConverter
 {
-    internal class ListConverter : ContainerBlockConverter
+    internal ListConverter(ListBlock block, ContainerBlockConverter parent)
+        : base(block, parent)
     {
-        internal ListConverter(ListBlock block, ContainerBlockConverter parent)
-            : base(block, parent)
+        ElementDescriptor = new SingleElementDescriptor
         {
-            ElementDescriptor = new SingleElementDescriptor
-            {
-                Attributes = Attributes,
-                Type = block.OrderedStart == null ? ElementType.UnorderedList : ElementType.OrderedList
-            };
-            Attributes.Markup = block.OrderedStart.HasValue() ? "Number" : block.BulletType.ToString();
-        }
+            Attributes = Attributes,
+            Type = block.OrderedStart == null ? ElementType.UnorderedList : ElementType.OrderedList
+        };
+        Attributes.Markup = block.OrderedStart != null ? "Number" : block.BulletType.ToString();
     }
 }

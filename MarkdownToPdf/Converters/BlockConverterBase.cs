@@ -1,124 +1,128 @@
-﻿// This file is a part of MarkdownToPdf Library by Tomas Kubec
+// This file is a part of MarkdownToPdf Library by Geert-Jan Thomas based on earlier work by Tomas Kubec
 // Distributed under MIT license - see license.txt
 //
 
 using Markdig.Syntax;
+using VectorAi.MarkdownToPdf.Converters.ContainerConverters;
+using VectorAi.MarkdownToPdf.MigrDoc;
+using VectorAi.MarkdownToPdf.Styling;
+using VectorAi.MarkdownToPdf.Styling.Style;
+using VectorAi.MarkdownToPdf.Utils;
 using MigraDoc.DocumentObjectModel;
-using Orionsoft.MarkdownToPdfLib.Styling;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace Orionsoft.MarkdownToPdfLib.Converters
+namespace VectorAi.MarkdownToPdf.Converters;
+
+internal abstract class BlockConverterBase : IBlockConverter
+
 {
-    internal abstract class BlockConverterBase : IBlockConverter
+    protected List<(double Height, Color Color)> bottomMarginsPending = [];
+    protected List<(double Height, Color Color)> topMarginsPending = [];
 
+    public Block Block { get; }
+    public ContainerBlockConverter? Parent { get; protected set; }
+
+    public MigraDocBlockContainer? OutputContainer { get; protected set; }
+    public MarkdownToPdf Owner { get; protected set; } = new MarkdownToPdf();
+    public ElementAttributes Attributes { get; protected set; } = new ElementAttributes("");
+    public CascadingStyle EvaluatedStyle { get; protected set; } = new CascadingStyle("");
+
+    public string RawText { get; protected set; } = string.Empty;
+    public List<string>? Lines { get; protected set; }
+
+    public SingleElementDescriptor ElementDescriptor { get; protected set; }
+    IBlockConverter? IElementConverter.Parent { get => Parent; }
+    public StylingDescriptor Descriptor => new StylingDescriptor(GetDescriptors());
+
+    /// <summary>
+    /// Calculated width of this block in points
+    /// </summary>
+    public double Width { get; protected set; }
+
+    /// <summary>
+    /// Calculated fontsize of this block in points
+    /// </summary>
+    public double FontSize { get; protected set; }
+
+    protected BlockConverterBase(Block block, ContainerBlockConverter? parent)
     {
-        protected List<(double Height, Color Color)> bottomMarginsPending;
-        protected List<(double Height, Color Color)> topMarginsPending;
+        Block = block;
+        Parent = parent;
+        Owner = parent?.Owner ?? Owner;
+        RawText = parent?.RawText ?? RawText;
+        Lines = parent?.Lines ?? Lines;
 
-        public Block Block { get; }
-        public ContainerBlockConverter Parent { get; protected set; }
+        ElementDescriptor = new SingleElementDescriptor();
+        OutputContainer = parent?.OutputContainer ?? OutputContainer;
+    }
 
-        public MigraDocBlockContainer OutputContainer { get; protected set; }
-        public MarkdownToPdf Owner { get; protected set; }
-        public ElementAttributes Attributes { get; protected set; }
-        public CascadingStyle EvaluatedStyle { get; protected set; }
+    public List<SingleElementDescriptor> GetDescriptors(List<SingleElementDescriptor>? descriptors = null)
+    {
+        descriptors = descriptors ?? new List<SingleElementDescriptor>();
 
-        public string RawText { get; protected set; }
-        public List<string> Lines { get; protected set; }
+        descriptors.Add(ElementDescriptor);
 
-        public SingleElementDescriptor ElementDescriptor { get; protected set; }
-        IBlockConverter IElementConverter.Parent { get => Parent; }
-        public StylingDescriptor Descriptor => new StylingDescriptor(GetDescriptors());
-
-        /// <summary>
-        /// Calculated width of this block in points
-        /// </summary>
-        public double Width { get; protected set; }
-
-        /// <summary>
-        /// Calculated fontsize of this block in points
-        /// </summary>
-        public double FontSize { get; protected set; }
-
-        protected BlockConverterBase(Block block, ContainerBlockConverter parent)
+        if (Parent != null && Parent.GetType() != typeof(RootBlockConvertor))
         {
-            Block = block;
-            Parent = parent;
-            Owner = parent?.Owner ?? Owner;
-            RawText = parent?.RawText ?? RawText;
-            Lines = parent?.Lines ?? Lines;
-
-            ElementDescriptor = new SingleElementDescriptor();
-            OutputContainer = parent?.OutputContainer ?? OutputContainer;
+            Parent.GetDescriptors(descriptors);
         }
+        return descriptors;
+    }
 
-        public List<SingleElementDescriptor> GetDescriptors(List<SingleElementDescriptor> descriptors = null)
-        {
-            descriptors = descriptors ?? new List<SingleElementDescriptor>();
+    protected CascadingStyle? GetStyle()
+    {
+        var style = Owner.StyleManager.GetStyle(Descriptor);
+        return style;
+    }
 
-            descriptors.Add(ElementDescriptor);
+    internal void Convert()
+    {
+        PrepareStyling();
+        Owner.OnStylingPrepared(this);
 
-            if (Parent != null && Parent.GetType() != typeof(RootBlockConvertor))
-            {
-                Parent.GetDescriptors(descriptors);
-            }
-            return descriptors;
-        }
+        AdjustInheritedHorizontalMargins();
+        RenderSimulatedMargins(topMarginsPending, BoxSide.Top);
+        if (bottomMarginsPending != null && bottomMarginsPending.Any()) EvaluatedStyle.Paragraph.KeepWithNext = true;
 
-        protected CascadingStyle GetStyle()
-        {
-            var style = Owner?.StyleManager.GetStyle(Descriptor);
-            return style;
-        }
+        if (!CreateOutput()) return;
+        ApplyStyling();
+        Owner.OnStylingApplied(this);
+        ConvertContent();
 
-        internal void Convert()
-        {
-            PrepareStyling();
-            Owner.OnStylingPrepared(this);
+        RenderSimulatedMargins(bottomMarginsPending, BoxSide.Bottom);
+    }
 
-            AdjustInheritedHorizontalMargins();
-            RenderSimulatedMargins(topMarginsPending, BoxSide.Top);
-            if (bottomMarginsPending != null && bottomMarginsPending.Any()) EvaluatedStyle.Paragraph.KeepWithNext = true;
+    protected abstract void ConvertContent();
 
-            if (!CreateOutput()) return;
-            ApplyStyling();
-            Owner.OnStylingApplied(this);
-            ConvertContent();
+    protected abstract void PrepareStyling();
 
-            RenderSimulatedMargins(bottomMarginsPending, BoxSide.Bottom);
-        }
+    protected abstract void ApplyStyling();
 
-        protected abstract void ConvertContent();
+    protected abstract bool CreateOutput();
 
-        protected abstract void PrepareStyling();
+    #region Inherited margins
 
-        protected abstract void ApplyStyling();
+    protected virtual void PrepareVerticalInheritedMargins()
+    {
+        if (Parent is IStandaloneContainerConverter || Parent == null) return;
 
-        protected abstract bool CreateOutput();
+        PrepareVerticalInheritedMargin(BoxSide.Left);
+        PrepareVerticalInheritedMargin(BoxSide.Right);
 
-        #region Inherited margins
+        // If a margin or padding is empty, MigraDoc behavior is sometimes strange, let's fix it:
 
-        protected virtual void PrepareVerticalInheritedMargins()
-        {
-            if (Parent is IStandaloneContainerConverter || Parent == null) return;
+        EvaluatedStyle.Padding.Left = EvaluatedStyle.Padding.Left.IsEmpty ? 0 : EvaluatedStyle.Padding.Left;
+        EvaluatedStyle.Padding.Right = EvaluatedStyle.Padding.Left.IsEmpty ? 0 : EvaluatedStyle.Padding.Right;
+        EvaluatedStyle.Margin.Left = EvaluatedStyle.Margin.Left.IsEmpty ? 0 : EvaluatedStyle.Margin.Left;
+        EvaluatedStyle.Margin.Right = EvaluatedStyle.Margin.Left.IsEmpty ? 0 : EvaluatedStyle.Margin.Right;
+    }
 
-            PrepareVerticalInheritedMargin(BoxSide.Left);
-            PrepareVerticalInheritedMargin(BoxSide.Right);
+    protected virtual void AdjustInheritedHorizontalMargins()
+    {
+    }
 
-            // If a margin or padding is empty, MigraDoc behavior is sometimes strange, let's fix it:
-
-            EvaluatedStyle.Padding.Left = EvaluatedStyle.Padding.Left.IsEmpty ? 0 : EvaluatedStyle.Padding.Left;
-            EvaluatedStyle.Padding.Right = EvaluatedStyle.Padding.Left.IsEmpty ? 0 : EvaluatedStyle.Padding.Right;
-            EvaluatedStyle.Margin.Left = EvaluatedStyle.Margin.Left.IsEmpty ? 0 : EvaluatedStyle.Margin.Left;
-            EvaluatedStyle.Margin.Right = EvaluatedStyle.Margin.Left.IsEmpty ? 0 : EvaluatedStyle.Margin.Right;
-        }
-
-        protected virtual void AdjustInheritedHorizontalMargins()
-        {
-        }
-
-        private void PrepareVerticalInheritedMargin(BoxSide side)
+    private void PrepareVerticalInheritedMargin(BoxSide side)
+    {
+        if (Parent != null)
         {
             if (!Parent.EvaluatedStyle.Background.IsEmpty || !Parent.EvaluatedStyle.Padding[side].IsEmpty)
             {
@@ -131,166 +135,178 @@ namespace Orionsoft.MarkdownToPdfLib.Converters
                 EvaluatedStyle.Margin[side] += Parent.EvaluatedStyle.Margin[side];
             }
         }
+    }
 
-        protected virtual List<(double Height, Color Color)> ApplyHorizontalInheritedMargin(BoxSide side)
+    protected virtual List<(double Height, Color Color)> ApplyHorizontalInheritedMargin(BoxSide side)
+    {
+        var horizontalMarginsPending = new List<(double Height, Color Color)>();
+
+        if (IsMarginalBlock(Block, side))
         {
-            var horizontalMarginsPending = new List<(double Height, Color Color)>();
-
-            if (IsMarginalBlock(Block, side))
+            if (Parent != null && Parent.EvaluatedStyle.Background.IsEmpty)
             {
-                if (Parent.EvaluatedStyle.Background.IsEmpty)
-                {
-                    EvaluatedStyle.Margin[side] += Parent.EvaluatedStyle.Padding[side] + Parent.EvaluatedStyle.Margin[side];
-                }
-                else
-                {
-                    horizontalMarginsPending = GetInheritedHorizontalMargins(side);
-                    EvaluatedStyle.Margin[side] = 0;
-                    horizontalMarginsPending = MergeHorizontalMargins(horizontalMarginsPending);
-
-                    // now we try to merge as mutch withou adding extra paragraphs
-                    if (horizontalMarginsPending.Any() && EvaluatedStyle.Border[side].Width.IsEmptyOrZero(FontSize, Width) && EvaluatedStyle.Background == horizontalMarginsPending[0].Color)
-                    {
-                        EvaluatedStyle.Padding[side] += horizontalMarginsPending[0].Height;
-                        horizontalMarginsPending = horizontalMarginsPending.Skip(1).ToList();
-                    }
-
-                    if (horizontalMarginsPending.Any() && horizontalMarginsPending[0].Color.IsEmpty)
-                    {
-                        EvaluatedStyle.Margin[side] += horizontalMarginsPending[0].Height;
-                        horizontalMarginsPending = horizontalMarginsPending.Skip(1).ToList();
-                    }
-
-                    if (side == BoxSide.Top) horizontalMarginsPending.Reverse();
-                }
+                EvaluatedStyle.Margin[side] += Parent.EvaluatedStyle.Padding[side] + Parent.EvaluatedStyle.Margin[side];
             }
             else
             {
-                horizontalMarginsPending = ApplyInheritedMiddleMargin(side);
-            }
+                horizontalMarginsPending = GetInheritedHorizontalMargins(side);
+                EvaluatedStyle.Margin[side] = 0;
+                horizontalMarginsPending = MergeHorizontalMargins(horizontalMarginsPending);
 
-            return horizontalMarginsPending;
+                // now we try to merge as mutch withou adding extra paragraphs
+                if (horizontalMarginsPending.Any() && EvaluatedStyle.Border[side].Width.IsEmptyOrZero(FontSize, Width) && EvaluatedStyle.Background == horizontalMarginsPending[0].Color)
+                {
+                    EvaluatedStyle.Padding[side] += horizontalMarginsPending[0].Height;
+                    horizontalMarginsPending = horizontalMarginsPending.Skip(1).ToList();
+                }
+
+                if (horizontalMarginsPending.Any() && horizontalMarginsPending[0].Color.IsEmpty)
+                {
+                    EvaluatedStyle.Margin[side] += horizontalMarginsPending[0].Height;
+                    horizontalMarginsPending = horizontalMarginsPending.Skip(1).ToList();
+                }
+
+                if (side == BoxSide.Top) horizontalMarginsPending.Reverse();
+            }
+        }
+        else
+        {
+            horizontalMarginsPending = ApplyInheritedMiddleMargin(side);
         }
 
-        private List<(double Height, Color Color)> ApplyInheritedMiddleMargin(BoxSide side)
-        {
-            var horizontalMarginsPending = new List<(double Height, Color Color)>();
+        return horizontalMarginsPending;
+    }
 
-            // top in the middle of container
-            if (!Parent.EvaluatedStyle.Background.IsEmpty)
+    private List<(double Height, Color Color)> ApplyInheritedMiddleMargin(BoxSide side)
+    {
+        var horizontalMarginsPending = new List<(double Height, Color Color)>();
+
+        // top in the middle of container
+        if (Parent != null && !Parent.EvaluatedStyle.Background.IsEmpty)
+        {
+            if (Parent.EvaluatedStyle.Background == EvaluatedStyle.Background && EvaluatedStyle.Border[side].Width.IsEmptyOrZero(FontSize, Width))
+
             {
-                if (Parent.EvaluatedStyle.Background == EvaluatedStyle.Background && EvaluatedStyle.Border[side].Width.IsEmptyOrZero(FontSize, Width))
-
-                {
-                    EvaluatedStyle.Padding[side] += EvaluatedStyle.Margin[side];
-                    EvaluatedStyle.Margin[side] = 0;
-                }
-                else
-                {
-                    horizontalMarginsPending.Add((EvaluatedStyle.Margin[side].Eval(FontSize, Width), Parent.EvaluatedStyle.Background));
-                    EvaluatedStyle.Margin[side] = 0;
-                }
+                EvaluatedStyle.Padding[side] += EvaluatedStyle.Margin[side];
+                EvaluatedStyle.Margin[side] = 0;
             }
-            return horizontalMarginsPending;
+            else
+            {
+                horizontalMarginsPending.Add((EvaluatedStyle.Margin[side].Eval(FontSize, Width).Point, Parent.EvaluatedStyle.Background));
+                EvaluatedStyle.Margin[side] = 0;
+            }
         }
+        return horizontalMarginsPending;
+    }
 
-        private List<(double Height, Color Color)> GetInheritedHorizontalMargins(BoxSide side)
+    private List<(double Height, Color Color)> GetInheritedHorizontalMargins(BoxSide side)
+    {
+        var parent = Parent;
+        var horizontalMarginsPending = new List<(double Height, Color Color)>();
+
+        if (Parent != null)
         {
-            var parent = Parent;
-            var horizontalMarginsPending = new List<(double Height, Color Color)>();
-
             if (!EvaluatedStyle.Margin[side].IsEmptyOrZero(FontSize, Width))
             {
-                horizontalMarginsPending.Add((EvaluatedStyle.Margin[side].Eval(FontSize, Width), Parent.EvaluatedStyle.Background));
+                horizontalMarginsPending.Add((EvaluatedStyle.Margin[side].Eval(FontSize, Width).Point, Parent.EvaluatedStyle.Background));
             }
 
-            while (!(parent is IStandaloneContainerConverter) && IsMarginalBlock(parent.Block, side))
+            while (parent != null && !(parent is IStandaloneContainerConverter) && IsMarginalBlock(parent.Block, side))
             {
                 if (!parent.EvaluatedStyle.Padding[side].IsEmptyOrZero(FontSize, Width))
-                    horizontalMarginsPending.Add((parent.EvaluatedStyle.Padding[side].Eval(FontSize, Width), parent.EvaluatedStyle.Background));
+                    horizontalMarginsPending.Add((parent.EvaluatedStyle.Padding[side].Eval(FontSize, Width).Point, parent.EvaluatedStyle.Background));
 
-                if (!parent.EvaluatedStyle.Margin[side].IsEmptyOrZero(FontSize, Width))
-                    horizontalMarginsPending.Add((parent.EvaluatedStyle.Margin[side].Eval(FontSize, Width), parent.Parent.EvaluatedStyle.Background));
+                if (!parent.EvaluatedStyle.Margin[side].IsEmptyOrZero(FontSize, Width) && parent.Parent != null)
+                    horizontalMarginsPending.Add((parent.EvaluatedStyle.Margin[side].Eval(FontSize, Width).Point, parent.Parent.EvaluatedStyle.Background));
 
                 parent = parent.Parent;
             }
 
-            if (!(parent is IStandaloneContainerConverter))
+            if (parent != null && !(parent is IStandaloneContainerConverter))
             {
-                horizontalMarginsPending.Add((parent.EvaluatedStyle.Padding[side].Eval(FontSize, Width), parent.EvaluatedStyle.Background));
-                horizontalMarginsPending.Add((parent.EvaluatedStyle.Margin[side].Eval(FontSize, Width), parent.Parent.EvaluatedStyle.Background));
-            }
-            return horizontalMarginsPending;
-        }
-
-        private List<(double Height, Color Color)> MergeHorizontalMargins(List<(double Height, Color Color)> stripes)
-        {
-            var res = new List<(double Height, Color Color)>();
-            if (!stripes.Any()) return res;
-
-            (double Height, Color Color) tmp = default;
-            foreach (var s in stripes)
-            {
-                if (tmp == default) tmp = s;
-                else if (tmp.Color == s.Color)
+                horizontalMarginsPending.Add((parent.EvaluatedStyle.Padding[side].Eval(FontSize, Width).Point, parent.EvaluatedStyle.Background));
+                if (parent.Parent != null)
                 {
-                    tmp = (tmp.Height + s.Height, tmp.Color);
-                }
-                else
-                {
-                    res.Add(tmp);
-                    tmp = s;
-                }
-            }
-            res.Add(tmp);
-            return res;
-        }
-
-        private bool IsMarginalBlock(Block block, BoxSide side)
-        {
-            return side == BoxSide.Top ? block.IsFirst() : block.IsLast();
-        }
-
-        private void RenderSimulatedMargins(List<(double Height, Color Color)> margins, BoxSide side)
-        {
-            var spaceBefore = 0.0;
-            MigrDocInlineContainer par = null;
-            if (margins != null)
-            {
-                if (margins.Count >= 2 && margins[0].Color.IsEmpty)
-                {
-                    spaceBefore = margins[0].Height;
-                }
-
-                foreach (var s in margins)
-                {
-                    if (par != null && s.Color.IsEmpty)
-                    {
-                        par.Format.SpaceAfter += s.Height;
-                        continue;
-                    }
-                    par = OutputContainer.AddParagraph();
-                    if (spaceBefore != 0)
-                    {
-                        par.Format.SpaceBefore = spaceBefore;
-                        spaceBefore = 0;
-                    }
-                    par.Format.Shading.Color = s.Color;
-                    par.Format.LineSpacingRule = LineSpacingRule.Exactly;
-                    par.Format.LineSpacing = s.Height;
-                    par.Format.LeftIndent = (EvaluatedStyle.Margin.Left + EvaluatedStyle.Padding.Left).Eval(FontSize, Width);
-                    par.Format.Borders.DistanceFromLeft = EvaluatedStyle.Padding.Left.Eval(FontSize, Width);
-                    par.Format.RightIndent = (EvaluatedStyle.Margin.Right + EvaluatedStyle.Padding.Right).Eval(FontSize, Width);
-                    par.Format.Borders.DistanceFromRight = EvaluatedStyle.Padding.Right.Eval(FontSize, Width);
-
-                    if (!(side == BoxSide.Bottom && s == margins.Last()))
-                    {
-                        par.Format.KeepWithNext = true;
-                    }
+                    horizontalMarginsPending.Add((parent.EvaluatedStyle.Margin[side].Eval(FontSize, Width).Point, parent.Parent.EvaluatedStyle.Background));
                 }
             }
         }
-
-        #endregion Inherited margins
+        return horizontalMarginsPending;
     }
+
+    private List<(double Height, Color Color)> MergeHorizontalMargins(List<(double Height, Color Color)> stripes)
+    {
+        var res = new List<(double Height, Color Color)>();
+        if (!stripes.Any()) return res;
+
+        (double Height, Color Color) tmp = default;
+        foreach (var s in stripes)
+        {
+            if (tmp == default) tmp = s;
+            else if (tmp.Color == s.Color)
+            {
+                tmp = (tmp.Height + s.Height, tmp.Color);
+            }
+            else
+            {
+                res.Add(tmp);
+                tmp = s;
+            }
+        }
+        res.Add(tmp);
+        return res;
+    }
+
+    private bool IsMarginalBlock(Block block, BoxSide side)
+    {
+        return side == BoxSide.Top ? block.IsFirst() : block.IsLast();
+    }
+
+    private void RenderSimulatedMargins(List<(double Height, Color Color)>? margins, BoxSide side)
+    {
+        var spaceBefore = 0.0;
+        MigrDocInlineContainer? par = null;
+        if (margins != null)
+        {
+            if (margins.Count >= 2 && margins[0].Color.IsEmpty)
+            {
+                spaceBefore = margins[0].Height;
+            }
+
+            foreach (var s in margins)
+            {
+                if (par != null && s.Color.IsEmpty)
+                {
+                    par.Format?.SpaceAfter += s.Height;
+                    continue;
+                }
+                if (OutputContainer != null)
+                {
+                    par = OutputContainer.AddParagraph();
+                    if (par != null)
+                    {
+                        if (spaceBefore != 0)
+                        {
+                            par.Format?.SpaceBefore = spaceBefore;
+                            spaceBefore = 0;
+                        }
+                        par.Format?.Shading.Color = s.Color;
+                        par.Format?.LineSpacingRule = LineSpacingRule.Exactly;
+                        par.Format?.LineSpacing = s.Height;
+                        par.Format?.LeftIndent = (EvaluatedStyle.Margin.Left + EvaluatedStyle.Padding.Left).Eval(FontSize, Width);
+                        par.Format?.Borders.DistanceFromLeft = EvaluatedStyle.Padding.Left.Eval(FontSize, Width);
+                        par.Format?.RightIndent = (EvaluatedStyle.Margin.Right + EvaluatedStyle.Padding.Right).Eval(FontSize, Width);
+                        par.Format?.Borders.DistanceFromRight = EvaluatedStyle.Padding.Right.Eval(FontSize, Width);
+
+                        if (!(side == BoxSide.Bottom && s == margins.Last()))
+                        {
+                            par.Format?.KeepWithNext = true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    #endregion Inherited margins
 }

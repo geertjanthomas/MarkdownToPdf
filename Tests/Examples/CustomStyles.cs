@@ -1,39 +1,42 @@
-﻿using MigraDoc.DocumentObjectModel;
-using Orionsoft.MarkdownToPdfLib;
-using Orionsoft.MarkdownToPdfLib.Styling;
-using System.IO;
+using VectorAi.MarkdownToPdf;
+using VectorAi.MarkdownToPdf.Styling;
+using MigraDoc.DocumentObjectModel;
+using System.Runtime.InteropServices;
 
-namespace Tests.Examples
+namespace Test10.Examples;
+
+/// <summary>
+/// Demonstration of:
+///   - basic page setup
+///   - default font
+///   - footer with page numbering
+/// </summary>
+
+public static class CustomStyles
 {
-    /// <summary>
-    /// Demonstration of:
-    ///   - basic page setup
-    ///   - default font
-    ///   - footer with page numbering
-    /// </summary>
-
-    public static class CustomStyles
+    public static void Run()
     {
-        public static void Run()
-        {
-            var markdown = File.ReadAllText("../../data/customStyles.md");
-            var pdf = new MarkdownToPdf();
+        var defaultFont = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "Calibri" : "Verdana";
 
-            // style with modifyied bullet is bound to nested list item (list item with an ancestor - other list litem)
-            var style = pdf.StyleManager.AddStyle("NestedListItem", MarkdownStyleNames.UnorderedListItem);
-            style.Bullet.Normal.Content = "*";
-            pdf.StyleManager.ForElement(ElementType.UnorderedListItem).WithAncestor(ElementType.UnorderedListItem).Bind(style);
+        var filePath = Path.Join(Program.BasePath(),"data/customStyles.md");
+        var markdown = File.ReadAllText(filePath);
 
-            // custom paragraph style "Blue" is created and bound to paragraphs with syle name "blue"
-            style = pdf.StyleManager.AddStyle("Blue", MarkdownStyleNames.Paragraph);
-            style.Font.Color = Colors.Blue;
-            style.Paragraph.Alignment = ParagraphAlignment.Justify;
-            pdf.StyleManager.ForElement(ElementType.Paragraph, "blue").Bind(style);
+        var pdf = new MarkdownToPdf();
 
-            pdf
-             .DefaultFont("Calibri", 11)
-             .Add(markdown)
-             .Save("customStyles.pdf");
-        }
+        // style with modifyied bullet is bound to nested list item (list item with an ancestor - other list litem)
+        var style = pdf.StyleManager.AddStyle("NestedListItem", MarkdownStyleNames.UnorderedListItem);
+        style.Bullet.Normal.Content = "*";
+        pdf.StyleManager.ForElement(ElementType.UnorderedListItem).WithAncestor(ElementType.UnorderedListItem).Bind(style);
+
+        // custom paragraph style "Blue" is created and bound to paragraphs with syle name "blue"
+        style = pdf.StyleManager.AddStyle("Blue", MarkdownStyleNames.Paragraph);
+        style.Font.Color = Colors.Blue;
+        style.Paragraph.Alignment = ParagraphAlignment.Justify;
+        pdf.StyleManager.ForElement(ElementType.Paragraph, "blue").Bind(style);
+
+        pdf
+         .DefaultFont(defaultFont, 11)
+         .Add(markdown)
+         .Save("customStyles.pdf");
     }
 }

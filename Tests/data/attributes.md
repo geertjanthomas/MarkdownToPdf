@@ -28,15 +28,15 @@
 
 - li
 
-Inline image ![Clock](../../data/images/clock.png){height=1em} is here.
+Inline image ![Clock](clock.png){height=1em} is here.
 
 **Centered image:**
 
-![Clock](../../data/images/clock.png){align=center width=2em}
+![Clock](clock.png){align=center width=2em}
 
 **Watermark image:**
 
-![Clock](../../data/images/clock.png){align=right width=3em watermark}
+![Clock](clock.png){align=right width=3em watermark}
 
 Text is placed over the image formatted as `watermark`.
 

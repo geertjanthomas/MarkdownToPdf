@@ -1,166 +1,165 @@
-﻿// This file is a part of MarkdownToPdf Library by Tomas Kubec
+// This file is a part of MarkdownToPdf Library by Geert-Jan Thomas based on earlier work by Tomas Kubec
 // Distributed under MIT license - see license.txt
 //
 
-namespace Orionsoft.MarkdownToPdfLib.Styling
+namespace VectorAi.MarkdownToPdf.Styling;
+
+/// <summary>
+/// Supported markdown element types
+/// </summary>
+public enum ElementType
 {
+    /// <summary> Do not use directly</summary>
+    Any,
+
+    // Containers
+
+    /// <summary> Do not use directly</summary>
+    Root,
+
+    /// <summary> List container containing other lists and list items</summary>
+    UnorderedList,
+
+    /// <summary> List container containing other lists and list items</summary>
+    OrderedList,
+
+    /// <summary> List Item container containing blocks</summary>
+    UnorderedListItem,
+
+    /// <summary> List Item container containing blocks</summary>
+    OrderedListItem,
+
+    /// <summary> Quote container containing blocks</summary>
+    Quote,
+
+    /// <summary> Container containing footnote blocks</summary>
+    FootnoteGroup,
+
+    /// <summary> Footnote container containing blocks</summary>
+    Footnote,
+
+    /// <summary> Table container containing table rows</summary>
+    Table,
+
+    /// <summary> Table heading row container containing table cells</summary>
+    TableHeader,
+
+    /// <summary> Table even row container containing table cells</summary>
+    TableRowEven,
+
+    /// <summary> Table odd row container containing table cells</summary>
+    TableRowOdd,
+
+    /// <summary> Table cell containing blocks</summary>
+    TableCell,
+
+    /// <summary> Container containing blocks</summary>
+    CustomContainer,
+
+    // Leafblocks
+
+    /// <summary> Paragraph block</summary>
+    Paragraph,
+
+    /// <summary> Heading block</summary>
+    Heading1,
+
+    /// <summary> Heading block</summary>
+    Heading2,
+
+    /// <summary> Heading block</summary>
+    Heading3,
+
+    /// <summary> Heading block</summary>
+    Heading4,
+
+    /// <summary> Heading block</summary>
+    Heading5,
+
+    /// <summary> Heading block</summary>
+    Heading6,
+
+    /// <summary> Code block</summary>
+    Code,
+
+    /// <summary> Thematic break (horizontal rule) block</summary>
+    Break,
+
     /// <summary>
-    /// Supported markdown element types
+    /// Image as an only element in paragraph
     /// </summary>
-    public enum ElementType
-    {
-        /// <summary> Do not use directly</summary>
-        Any,
+    Image,
 
-        // Containers
+    /// <summary>
+    ///  Plugin as an only element in paragraph
+    /// </summary>
+    Plugin,
 
-        /// <summary> Do not use directly</summary>
-        Root,
+    // Inlines
 
-        /// <summary> List container containing other lists and list items</summary>
-        UnorderedList,
+    /// <summary>Inline emphasis</summary>
+    Bold,
 
-        /// <summary> List container containing other lists and list items</summary>
-        OrderedList,
+    /// <summary>Inline emphasis</summary>
+    Italic,
 
-        /// <summary> List Item container containing blocks</summary>
-        UnorderedListItem,
+    /// <summary>Inline hyperlink</summary>
+    Hyperlink,
 
-        /// <summary> List Item container containing blocks</summary>
-        OrderedListItem,
+    /// <summary>Inline emphasis</summary>
+    InlineCode,
 
-        /// <summary> Quote container containing blocks</summary>
-        Quote,
+    /// <summary>Inline footnote reference number</summary>
+    FootnoteReference,
 
-        /// <summary> Container containing footnote blocks</summary>
-        FootnoteGroup,
+    /// <summary>Inline emphasis</summary>
+    Superscript,
 
-        /// <summary> Footnote container containing blocks</summary>
-        Footnote,
+    /// <summary>Inline emphasis</summary>
+    Subscript,
 
-        /// <summary> Table container containing table rows</summary>
-        Table,
+    /// <summary>Inline emphasis</summary>
+    Cite,
 
-        /// <summary> Table heading row container containing table cells</summary>
-        TableHeader,
+    /// <summary>Inline emphasis</summary>
+    Strike,
 
-        /// <summary> Table even row container containing table cells</summary>
-        TableRowEven,
+    /// <summary>Inline emphasis</summary>
+    Inserted,
 
-        /// <summary> Table odd row container containing table cells</summary>
-        TableRowOdd,
+    /// <summary>Inline emphasis</summary>
+    Marked,
 
-        /// <summary> Table cell containing blocks</summary>
-        TableCell,
+    /// <summary>
+    /// Inline image
+    /// </summary>
+    InlineImage,
 
-        /// <summary> Container containing blocks</summary>
-        CustomContainer,
+    /// <summary>
+    ///  Inline plugin
+    /// </summary>
+    InlinepPlugin,
 
-        // Leafblocks
+    // Special inlines
 
-        /// <summary> Paragraph block</summary>
-        Paragraph,
+    /// <summary>Inline hyperlink, turns line into TOC item</summary>
+    Toc1,
 
-        /// <summary> Heading block</summary>
-        Heading1,
+    /// <summary>Inline hyperlink, turns line into TOC item</summary>
+    Toc2,
 
-        /// <summary> Heading block</summary>
-        Heading2,
+    /// <summary>Inline hyperlink, turns line into TOC item</summary>
+    Toc3,
 
-        /// <summary> Heading block</summary>
-        Heading3,
+    /// <summary>Inline hyperlink, turns line into TOC item</summary>
+    Toc4,
 
-        /// <summary> Heading block</summary>
-        Heading4,
+    /// <summary>Inline hyperlink, turns line into TOC item</summary>
+    Toc5,
 
-        /// <summary> Heading block</summary>
-        Heading5,
+    /// <summary>Inline hyperlink, turns line into TOC item</summary>
+    Toc6,
 
-        /// <summary> Heading block</summary>
-        Heading6,
-
-        /// <summary> Code block</summary>
-        Code,
-
-        /// <summary> Thematic break (horizontal rule) block</summary>
-        Break,
-
-        /// <summary>
-        /// Image as an only element in paragraph
-        /// </summary>
-        Image,
-
-        /// <summary>
-        ///  Plugin as an only element in paragraph
-        /// </summary>
-        Plugin,
-
-        // Inlines
-
-        /// <summary>Inline emphasis</summary>
-        Bold,
-
-        /// <summary>Inline emphasis</summary>
-        Italic,
-
-        /// <summary>Inline hyperlink</summary>
-        Hyperlink,
-
-        /// <summary>Inline emphasis</summary>
-        InlineCode,
-
-        /// <summary>Inline footnote reference number</summary>
-        FootnoteReference,
-
-        /// <summary>Inline emphasis</summary>
-        Superscript,
-
-        /// <summary>Inline emphasis</summary>
-        Subscript,
-
-        /// <summary>Inline emphasis</summary>
-        Cite,
-
-        /// <summary>Inline emphasis</summary>
-        Strike,
-
-        /// <summary>Inline emphasis</summary>
-        Inserted,
-
-        /// <summary>Inline emphasis</summary>
-        Marked,
-
-        /// <summary>
-        /// Inline image
-        /// </summary>
-        InlineImage,
-
-        /// <summary>
-        ///  Inline plugin
-        /// </summary>
-        InlinepPlugin,
-
-        // Special inlines
-
-        /// <summary>Inline hyperlink, turns line into TOC item</summary>
-        Toc1,
-
-        /// <summary>Inline hyperlink, turns line into TOC item</summary>
-        Toc2,
-
-        /// <summary>Inline hyperlink, turns line into TOC item</summary>
-        Toc3,
-
-        /// <summary>Inline hyperlink, turns line into TOC item</summary>
-        Toc4,
-
-        /// <summary>Inline hyperlink, turns line into TOC item</summary>
-        Toc5,
-
-        /// <summary>Inline hyperlink, turns line into TOC item</summary>
-        Toc6,
-
-        /// <summary>Inline hyperlink, turns line into TOC item</summary>
-        Index
-    }
+    /// <summary>Inline hyperlink, turns line into TOC item</summary>
+    Index
 }

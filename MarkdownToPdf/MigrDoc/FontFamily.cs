@@ -1,24 +1,25 @@
-﻿// This file is a part of MarkdownToPdf Library by Tomas Kubec
+﻿// This file is a part of MarkdownToPdf Library by Geert-Jan Thomas based on earlier work by Tomas Kubec
 // Distributed under MIT license - see license.txt
 //
 
-namespace Orionsoft.MarkdownToPdfLib
-{
-    internal class FontFamily
-    {
-        public string Name { get; set; }
-        public string Normal { get; set; }
-        public string Bold { get; set; }
-        public string Italic { get; set; }
-        public string BoldItalic { get; set; }
+namespace VectorAi.MarkdownToPdf.MigrDoc;
 
-        public FontFamily(string name, string regular, string bold = "", string italic = "", string boldItalic = "")
-        {
-            Name = name;
-            Normal = regular;
-            Bold = bold.HasValue() ? bold : Normal;
-            Italic = italic.HasValue() ? italic : Normal;
-            BoldItalic = boldItalic.HasValue() ? boldItalic : italic.HasValue() ? italic : regular;
-        }
+internal class FontFamily
+{
+    public string? Folder { get; set; }
+    public string Name { get; set; }
+    public string Normal { get; set; }
+    public string Bold { get; set; }
+    public string Italic { get; set; }
+    public string BoldItalic { get; set; }
+
+    public FontFamily(string name, string regular, string bold = "", string italic = "", string boldItalic = "", string? folder = null)
+    {
+        Name = name;
+        Normal = regular;
+        Bold = !string.IsNullOrEmpty(bold) ? bold : Normal;
+        Italic = !string.IsNullOrEmpty(italic) ? italic : Normal;
+        BoldItalic = !string.IsNullOrEmpty(boldItalic) ? boldItalic : !string.IsNullOrEmpty(italic) ? italic : regular;
+        Folder = folder;
     }
 }
